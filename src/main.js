@@ -33,7 +33,6 @@ const gauthOption = {
   fetch_basic_profile: true,
 };
 Vue.use(GAuth, gauthOption);
-
 Vue.config.productionTip = false;
 
 new Vue({

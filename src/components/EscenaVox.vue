@@ -6,6 +6,7 @@
     <a class="btn-grad" @click="exportSceneObject()">descargar</a>
 
     <h2 id="title_room"></h2>
+    <input v-model="color" type="color" value="#0f0f0f" @input='CambioColor()'>
   </div>
 </template>
 <script>
@@ -39,6 +40,7 @@ export default {
       cubeMaterial: null,
       objects: [],
       controls: null,
+      color: this.color,
       params: {
         trs: false,
         onlyVisible: true,
@@ -84,7 +86,7 @@ export default {
       this.cubeGeo = new THREE.BoxGeometry(50, 50, 50);
 
       this.cubeMaterial = new THREE.MeshPhongMaterial({
-        color: 0xf3f3f3,
+        color: 0xf0f0f0,
         // wireframe: true,
       });
 
@@ -131,6 +133,17 @@ export default {
       document.addEventListener("pointerdown", this.onPointerDown);
       document.addEventListener("keydown", this.onDocumentKeyDown);
       document.addEventListener("keyup", this.onDocumentKeyUp);
+    },
+    CambioColor(){
+
+      var colornuevo = new THREE.Color(this.color);
+      colornuevo.getHex();
+      console.log(colornuevo);
+      this.cubeMaterial= new THREE.MeshPhongMaterial({
+        color: colornuevo,
+      });
+
+
     },
     onWindowResize() {
       this.camera.aspect = window.innerWidth / window.innerHeight;
