@@ -1,8 +1,9 @@
 <template>
   <div>
     <!-- <barra-herramientas /> -->
+    <button @click="login()">Google Sign in</button>
+    <p v-if="user">login {{ user.iY }}</p>
     <form id="login-form">
-      <h2>Socket.io Chat App</h2>
       <p id="error-msg"></p>
       <input
         type="text"
@@ -37,6 +38,7 @@ import { io } from "socket.io-client";
 export default {
   data() {
     return {
+      isLogin: false,
       username: "",
       room: "",
       camera: null,
@@ -63,10 +65,15 @@ export default {
       clients: new Object(),
       id: null,
       voxel: null,
+      user: null,
     };
   },
   // components: { BarraHerramientas},
   methods: {
+    async login() {
+      const googleUser = await this.$gAuth.signIn();
+      this.user = googleUser.getBasicProfile();
+    },
     init: function () {
       this.camera = new THREE.PerspectiveCamera(
         45,
@@ -202,7 +209,8 @@ export default {
       this.raycaster.setFromCamera(this.pointer, this.camera);
 
       const intersects = this.raycaster.intersectObjects(this.objects, false);
-
+      console.log(this.objects);
+      console.log(intersects);
       if (intersects.length > 0) {
         const intersect = intersects[0];
 
@@ -213,6 +221,8 @@ export default {
             this.scene.remove(intersect.object);
 
             this.objects.splice(this.objects.indexOf(intersect.object), 1);
+            console.log("borrando");
+            this.socket.emit("removeVoxel", intersect.object.position);
           }
 
           // create cube
@@ -229,19 +239,11 @@ export default {
 
           this.socket.emit("move", this.voxel.position);
 
+          // this.scene.add(this.voxel);
+
+          // const box = new THREE.BoxHelper(this.voxel, 0x000000);
+
           this.scene.add(this.voxel);
-
-          // const cubeMaterial2 = new THREE.MeshPhongMaterial({
-          //   color: 0x000000,
-          //   wireframe: true,
-          // });
-          // const contorno = new THREE.Mesh(this.cubeGeo, cubeMaterial2);
-          // contorno.position.copy(voxel.position);
-          // this.scene.add(contorno);
-
-          const box = new THREE.BoxHelper(this.voxel, 0x000000);
-          this.scene.add(box);
-
           this.objects.push(this.voxel);
         }
 
@@ -325,9 +327,6 @@ export default {
   mounted() {
     this.init();
     this.animate();
-
-    // console.log(this.objects);
-    // console.log(this.scene);
   },
   created() {
     this.socket = io("http://localhost:8080/");
@@ -353,46 +352,61 @@ export default {
       this.id = _id;
       console.log("Mi ID es: " + this.id);
     });
+
+    this.socket.on("actualizar", (_id) => {
+      console.log(_id + "se a conectado");
+      this.socket.emit("actualizarEscena", this.objects);
+    });
+    this.socket.on(
+      "removeVoxelScene",
+      (clientCount, _id, _ids, voxelPosition) => {
+        console.log(voxelPosition);
+
+        if (_id != this.id) {
+          console.log("id del que quito el voxel:" + _id);
+
+          this.objects.forEach((element) => {
+            console.log("antes del if:", element);
+            if (
+              element.position.x == voxelPosition.x &&
+              element.position.y == voxelPosition.y &&
+              element.position.z == voxelPosition.z
+            ) {
+              console.log("despues del if:", element);
+              // element.visible = false;
+              this.scene.remove(element);
+              this.objects.splice(this.objects.indexOf(element), 1);
+              console.log("encontrado!!");
+            } else {
+              // console.log("Hay un error");
+            }
+          });
+          console.log("array a remover", this.objects);
+        }
+      }
+    );
+
     this.socket.on(
       "userPositionsVoxels",
       (clientCount, _id, _ids, voxelPosition) => {
         console.log(voxelPosition);
-        // let alreadyHasUser = false;
+
         console.log(this.id, _id);
         console.log(this.clients);
-        for (let i = 0; i < Object.keys(this.clients).length; i++) {
-          if (Object.keys(this.clients)[i] == _id) {
-            // alreadyHasUser = true;
-            // console.log("es mio cliente");
-            break;
-          }
-        }
+
         if (_id != this.id) {
           console.log("id del que puso el voxel:" + _id);
           this.clients[_id] = {
             mesh: new THREE.Mesh(this.cubeGeo, this.cubeMaterial),
           };
 
-          // contorno: new THREE.BoxHelper(mesh, 0x000000),
-
           console.log("recibiendo posicion voxel");
-          console.log(this.clients[_id].contorno);
 
-          //Add initial users to the scene
-          // let contorno = THREE.BoxHelper(this.clients[_id].mesh, 0x000000);
           this.clients[_id].mesh.position.x = voxelPosition.x;
           this.clients[_id].mesh.position.y = voxelPosition.y;
           this.clients[_id].mesh.position.z = voxelPosition.z;
-          let contorno = new THREE.BoxHelper(this.clients[_id].mesh, 0x000000);
-
-          // contorno.position.x = voxelPosition.x;
-          // contorno.position.y = voxelPosition.y;
-          // contorno.position.z = voxelPosition.z;
           this.scene.add(this.clients[_id].mesh);
-          this.scene.add(contorno);
-          // this.scene.add(contorno);
           this.objects.push(this.clients[_id].mesh);
-          // this.scene.add(this.clients[_id].contorno);
         }
       }
     );
