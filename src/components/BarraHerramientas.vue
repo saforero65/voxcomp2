@@ -60,7 +60,13 @@ export default {
 };
 </script>
 <style scoped>
+a {
+  text-decoration: none;
+  color: white;
+}
+
 ul {
+  list-style: none;
   position: absolute;
   bottom: 0;
   color: white;
@@ -69,8 +75,9 @@ ul {
   align-items: center;
   flex-direction: row;
   font-size: 1.4rem;
-  width: 98%;
+  width: 98vw;
   font-family: "Exo 2", sans-serif;
+  padding: 0;
 }
 li:nth-child(1) {
   margin-left: 1rem;

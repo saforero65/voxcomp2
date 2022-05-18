@@ -1,25 +1,10 @@
 <template>
   <div>
+    <!-- <span>{{ user }}</span> -->
     <!-- <barra-herramientas /> -->
-    <button @click="login()">Google Sign in</button>
-    <p v-if="user">login {{ user.iY }}</p>
-    <form id="login-form">
-      <p id="error-msg"></p>
-      <input
-        type="text"
-        name="username"
-        placeholder="Enter your username"
-        v-model="username"
-      />
-      <input
-        type="text"
-        name="room"
-        placeholder="Enter a chat room name"
-        v-model="room"
-      />
-      <input type="submit" value="Join Chat" />
-    </form>
-    <button @click="exportSceneObject()">descargar</button>
+
+    <a class="btn-grad" @click="exportSceneObject()">descargar</a>
+
     <h2 id="title_room"></h2>
   </div>
 </template>
@@ -36,9 +21,9 @@ import { io } from "socket.io-client";
 // import * as CSG from 'csg';
 
 export default {
+  props: ["user"],
   data() {
     return {
-      isLogin: false,
       username: "",
       room: "",
       camera: null,
@@ -65,15 +50,10 @@ export default {
       clients: new Object(),
       id: null,
       voxel: null,
-      user: null,
     };
   },
   // components: { BarraHerramientas},
   methods: {
-    async login() {
-      const googleUser = await this.$gAuth.signIn();
-      this.user = googleUser.getBasicProfile();
-    },
     init: function () {
       this.camera = new THREE.PerspectiveCamera(
         45,
@@ -128,7 +108,7 @@ export default {
 
       this.plane = new THREE.Mesh(
         geometry,
-        new THREE.MeshBasicMaterial({ visible: false, color: 0xf0f0f0})
+        new THREE.MeshBasicMaterial({ visible: false, color: 0xf0f0f0 })
       );
       this.scene.add(this.plane);
       this.objects.push(this.plane);
@@ -329,7 +309,46 @@ export default {
     this.animate();
   },
   created() {
-    this.socket = io("http://localhost:8080/");
+    this.socket = io("https://prueba-voxcomp.herokuapp.com/");
+
+    this.socket.on("newUserConnected", (clientCount, _id) => {
+      console.log(clientCount + " usuarios conectados");
+      let alreadyHasUser = false;
+      for (let i = 0; i < Object.keys(this.clients).length; i++) {
+        if (Object.keys(this.clients)[i] == _id) {
+          alreadyHasUser = true;
+          break;
+        }
+      }
+      if (_id != this.id && !alreadyHasUser) {
+        console.log("Llego alguien al server!!! con el id: " + _id);
+        console.log(this.clients[_id]);
+      }
+      // document.getElementById("botonCrear").addEventListener("click", (e) => {
+      console.log("le dio click a crear", this.user);
+      // e.preventDefault();
+      // console.log(user);
+      this.socket.emit(
+        "joinRoom",
+        {
+          username: this.user.username,
+          room: this.user.room,
+        },
+        (data) => {
+          if (data.nameAvailable) {
+            document.getElementById("title_room").innerText =
+              "Estas en la sala: " + this.user.room;
+            console.log("Estas en la sala: " + this.user.room);
+            // this.sendToDad();
+            // $messageArea.show();
+            // $loginArea.hide("slow");
+          } else {
+            console.log(data.error);
+          }
+        }
+      );
+      // });
+    });
 
     this.socket.on("introduction", (_id, _clientNum, _ids) => {
       for (let i = 0; i < _ids.length; i++) {
@@ -410,42 +429,7 @@ export default {
         }
       }
     );
-    this.socket.on("newUserConnected", (clientCount, _id) => {
-      console.log(clientCount + " usuarios conectados");
-      let alreadyHasUser = false;
-      for (let i = 0; i < Object.keys(this.clients).length; i++) {
-        if (Object.keys(this.clients)[i] == _id) {
-          alreadyHasUser = true;
-          break;
-        }
-      }
-      if (_id != this.id && !alreadyHasUser) {
-        console.log("Llego alguien al server!!! con el id: " + _id);
 
-        console.log(this.clients[_id]);
-      }
-      document.getElementById("login-form").addEventListener("submit", (e) => {
-        e.preventDefault();
-
-        this.socket.emit(
-          "joinRoom",
-          {
-            username: this.username,
-            room: this.room,
-          },
-          (data) => {
-            if (data.nameAvailable) {
-              document.getElementById("title_room").innerText =
-                "Estas en la sala: " + this.room;
-              // $messageArea.show();
-              // $loginArea.hide("slow");
-            } else {
-              console.log(data.error);
-            }
-          }
-        );
-      });
-    });
     this.socket.on("userDisconnected", (clientCount, _id) => {
       //Update the data from the server
       // document.getElementById("numUsers").textContent = clientCount;
@@ -462,7 +446,41 @@ export default {
 </script>
 
 <style scoped>
+.btn-grad {
+  width: fit-content;
+  background-image: linear-gradient(
+    to right,
+    #77a1d3 0%,
+    #79cbca 51%,
+    #77a1d3 100%
+  );
+  margin: auto;
+  padding: 15px 45px;
+  text-align: center;
+  text-transform: uppercase;
+  transition: 0.5s;
+  background-size: 200% auto;
+  color: white;
+  /* box-shadow: 0 0 20px #eee; */
+  border-radius: 10px;
+  display: block;
+  position: absolute;
+  bottom: 5rem;
+  left: 0;
+  right: 0;
+}
+
+.btn-grad:hover {
+  background-position: right center; /* change the direction of the change here */
+  color: #fff;
+  text-decoration: none;
+}
+
 .menu {
+  position: absolute;
+}
+#title_room {
+  color: white;
   position: absolute;
 }
 #container {
