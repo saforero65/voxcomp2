@@ -1,7 +1,25 @@
 <template>
   <div>
     <!-- <barra-herramientas /> -->
+    <form id="login-form">
+      <h2>Socket.io Chat App</h2>
+      <p id="error-msg"></p>
+      <input
+        type="text"
+        name="username"
+        placeholder="Enter your username"
+        v-model="username"
+      />
+      <input
+        type="text"
+        name="room"
+        placeholder="Enter a chat room name"
+        v-model="room"
+      />
+      <input type="submit" value="Join Chat" />
+    </form>
     <button @click="exportSceneObject()">descargar</button>
+    <h2 id="title_room"></h2>
   </div>
 </template>
 <script>
@@ -19,6 +37,8 @@ import { io } from "socket.io-client";
 export default {
   data() {
     return {
+      username: "",
+      room: "",
       camera: null,
       scene: null,
       renderer: null,
@@ -38,12 +58,6 @@ export default {
         truncateDrawRange: true,
         binary: false,
         maxTextureSize: 4096,
-        // exportScene1: exportScene1,
-        // exportScenes: exportScenes,
-        // exportSphere: exportSphere,
-        // exportHead: exportHead,
-        // exportObjects: exportObjects,
-        // exportSceneObject: exportSceneObject
       },
       socket: {},
       clients: new Object(),
@@ -54,7 +68,6 @@ export default {
   // components: { BarraHerramientas},
   methods: {
     init: function () {
-      // let container = document.getElementById("container");
       this.camera = new THREE.PerspectiveCamera(
         45,
         window.innerWidth / window.innerHeight,
@@ -317,7 +330,7 @@ export default {
     // console.log(this.scene);
   },
   created() {
-    this.socket = io("https://prueba-voxcomp.herokuapp.com/");
+    this.socket = io("http://localhost:8080/");
 
     this.socket.on("introduction", (_id, _clientNum, _ids) => {
       for (let i = 0; i < _ids.length; i++) {
@@ -394,18 +407,30 @@ export default {
       }
       if (_id != this.id && !alreadyHasUser) {
         console.log("Llego alguien al server!!! con el id: " + _id);
-        this.clients[_id] = {
-          mesh: new THREE.Mesh(
-            new THREE.BoxGeometry(50, 50, 50),
-            new THREE.MeshNormalMaterial()
-          ),
-        };
 
-        //Add initial users to the scene
-        // this.clients[_id].mesh.position.x = Math.random() * (1000 - 0) + 0;
-        // this.scene.add(this.clients[_id].mesh);
-        console.log(this.clients[_id].mesh);
+        console.log(this.clients[_id]);
       }
+      document.getElementById("login-form").addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        this.socket.emit(
+          "joinRoom",
+          {
+            username: this.username,
+            room: this.room,
+          },
+          (data) => {
+            if (data.nameAvailable) {
+              document.getElementById("title_room").innerText =
+                "Estas en la sala: " + this.room;
+              // $messageArea.show();
+              // $loginArea.hide("slow");
+            } else {
+              console.log(data.error);
+            }
+          }
+        );
+      });
     });
     this.socket.on("userDisconnected", (clientCount, _id) => {
       //Update the data from the server
@@ -414,7 +439,7 @@ export default {
       if (_id != this.id) {
         console.log("Y se marcho!!, el usuario con id: " + _id);
         // console.log(this.clients);
-        this.scene.remove(this.clients[_id].mesh);
+        this.scene.remove(this.clients[_id]);
         delete this.clients[_id];
       }
     });
