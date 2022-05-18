@@ -309,7 +309,7 @@ export default {
     this.animate();
   },
   created() {
-    this.socket = io("https://prueba-voxcomp.herokuapp.com/");
+    this.socket = io("http://localhost:8080/");
 
     this.socket.on("newUserConnected", (clientCount, _id) => {
       console.log(clientCount + " usuarios conectados");
