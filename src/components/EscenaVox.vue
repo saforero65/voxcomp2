@@ -79,7 +79,7 @@ export default {
       this.camera.lookAt(new THREE.Vector3(0, 0, 0));
 
       this.scene = new THREE.Scene();
-      this.scene.background = new THREE.Color(0xf0f0f0);
+      this.scene.background = new THREE.Color(0x000000);
 
       // roll-over helpers
 
@@ -107,8 +107,8 @@ export default {
       this.gridHelper = new THREE.GridHelper(
         size,
         divisions,
-        0x39ff14,
-        0x39ff14
+        0xffffff,
+        0xffffff
       );
       this.scene.add(this.gridHelper);
 
@@ -121,7 +121,7 @@ export default {
 
       this.plane = new THREE.Mesh(
         geometry,
-        new THREE.MeshBasicMaterial({ visible: false })
+        new THREE.MeshBasicMaterial({ visible: false, color: 0xf0f0f0})
       );
       this.scene.add(this.plane);
       this.objects.push(this.plane);

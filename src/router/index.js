@@ -1,6 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import EscenaVox from "../components/EscenaVox.vue";
+import Bienvenido from "../components/BienvenidoPage.vue";
 
 Vue.use(VueRouter);
 
@@ -10,6 +11,12 @@ const routes = [
     name: "home",
     component: EscenaVox,
   },
+  {
+    path: "/",
+    name: "Bienvenido",
+    component: Bienvenido,
+  },
+
 ];
 
 const router = new VueRouter({
