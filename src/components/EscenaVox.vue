@@ -373,6 +373,7 @@ export default {
   created() {
     this.clock = new THREE.Clock();
     this.socket = io("http://localhost:8080/");
+    // this.socket = io("https://prueba-voxcomp.herokuapp.com/");
 
     this.socket.on("newUserConnected", (clientCount, _id) => {
       console.log(clientCount + " usuarios conectados");
