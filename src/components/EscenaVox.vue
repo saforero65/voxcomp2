@@ -7,6 +7,7 @@
 
     <h2 id="title_room"></h2>
     <input
+      class="picker"
       v-model="color"
       type="color"
       value="#0f0f0f"
@@ -494,5 +495,8 @@ export default {
   position: absolute;
   left: 20px;
   top: 20px;
+}
+.picker {
+  position: absolute;
 }
 </style>
