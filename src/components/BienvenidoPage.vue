@@ -17,8 +17,16 @@
         />
         <p v-if="user">login {{ user.iY }}</p>
         <div class="botones">
-          <button class="btn1" @click="NuevaSala()"><a>Crear</a></button>
-          <button class="btn1" @click="UnirseSala()"><a>Unirse</a></button>
+          <button :disabled="username === ''" class="btn1" @click="NuevaSala()">
+            <a>Crear</a>
+          </button>
+          <button
+            :disabled="username === ''"
+            class="btn1"
+            @click="UnirseSala()"
+          >
+            <a>Unirse</a>
+          </button>
           <button class="btn2" @click="Instruc()"><a>Instrucciones</a></button>
         </div>
       </div>
@@ -30,7 +38,12 @@
         <input type="text" class="input" v-model="room" />
         <div class="botones2">
           <button class="btn1" @click="Atras()"><a>Atrás</a></button>
-          <button class="btn1" id="botonCrear" @click="sendToDad()">
+          <button
+            :disabled="room === ''"
+            class="btn1"
+            id="botonCrear"
+            @click="sendToDad()"
+          >
             <a>CREAR</a>
           </button>
         </div>
@@ -43,7 +56,9 @@
         <input type="text" class="input" />
         <div class="botones2">
           <button class="btn1" @click="Atras()"><a>Atrás</a></button>
-          <button class="btn1" @click="sendToDad()"><a>CREAR</a></button>
+          <button :disabled="room === ''" class="btn1" @click="sendToDad()">
+            <a>CREAR</a>
+          </button>
         </div>
       </div>
     </div>

@@ -12,7 +12,7 @@
 // import ButtonCounter from "./ButtonCounter.vue";
 // import BarraHerramientas from "../components/BarraHerramientas.vue";
 
-//import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import * as THREE from "three";
 import { GLTFExporter } from "three/examples/jsm/exporters/GLTFExporter.js";
 import { io } from "socket.io-client";
@@ -58,15 +58,14 @@ export default {
       this.camera = new THREE.PerspectiveCamera(
         45,
         window.innerWidth / window.innerHeight,
-        0.01,
-        3000
+        1,
+        10000
       );
-
       this.camera.position.set(500, 800, 1300);
-      this.camera.lookAt(new THREE.Vector3(0, 0, 0));
+      this.camera.lookAt(0, 0, 0);
 
       this.scene = new THREE.Scene();
-      this.scene.background = new THREE.Color(0x000000);
+      this.scene.background = new THREE.Color(0x333333);
 
       // roll-over helpers
 
@@ -82,22 +81,11 @@ export default {
       // cubes
 
       this.cubeGeo = new THREE.BoxGeometry(50, 50, 50);
-
-      this.cubeMaterial = new THREE.MeshPhongMaterial({
-        color: 0xf3f3f3,
-        // wireframe: true,
-      });
+      this.cubeMaterial = new THREE.MeshLambertMaterial({ color: 0xfeb74c });
 
       // Declaracion de la grilla
-      const size = 1000;
-      const divisions = 20;
-      this.gridHelper = new THREE.GridHelper(
-        size,
-        divisions,
-        0xffffff,
-        0xffffff
-      );
-      this.scene.add(this.gridHelper);
+      const gridHelper = new THREE.GridHelper(1000, 20);
+      this.scene.add(gridHelper);
 
       this.raycaster = new THREE.Raycaster();
       this.pointer = new THREE.Vector2();
@@ -115,17 +103,17 @@ export default {
 
       // lights
 
-      // const ambientLight = new THREE.AmbientLight(0xffffff, 2);
-      // this.scene.add(ambientLight);
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+      this.scene.add(ambientLight);
 
       const directionalLight = new THREE.DirectionalLight(0xffffff, 2);
-      directionalLight.position.set(1, 0.75, 0.5);
+      directionalLight.position.set(1, 0.75, 0.5).normalize();
       this.scene.add(directionalLight);
 
       this.renderer = new THREE.WebGLRenderer({ antialias: true });
       this.renderer.setSize(window.innerWidth, window.innerHeight);
       document.body.appendChild(this.renderer.domElement);
-      //this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+      this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 
       document.addEventListener("pointermove", this.onPointerMove);
       document.addEventListener("pointerdown", this.onPointerDown);
