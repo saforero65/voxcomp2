@@ -19,6 +19,12 @@
           type="color"
           @input="CambioColor()"
         />
+        <img
+          @click="cargaModelo()"
+          src="../assets/Agregar.png"
+          alt="AgregarObjeto"
+        />
+        <!-- <img src="../assets/Agregar.png" alt="AgregarObjeto" /> -->
         <img src="../assets/Agregar.png" alt="AgregarObjeto" />
         <img src="../assets/Quitar.png" alt="QuitarObjeto" />
         <img
@@ -93,7 +99,7 @@ export default {
       this.camera.lookAt(0, 0, 0);
 
       this.scene = new THREE.Scene();
-      this.scene.background = new THREE.Color(0x333333);
+      this.scene.background = new THREE.Color(0x000000);
 
       // roll-over helpers
 

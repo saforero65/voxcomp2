@@ -2,7 +2,7 @@
   <div>
     <div class="row" id="message-area">
       <div class="large-8 columns small-centered">
-        <h2>Socket.io Chat App</h2>
+        <h2>Chat Sala</h2>
         <div class="chat-wrap">
           <div class="top">
             <h5 class="room-title"></h5>
