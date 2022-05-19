@@ -3,9 +3,10 @@
     <!-- <span>{{ user }}</span> -->
     <!-- <barra-herramientas /> -->
 
-    <a class="btn-grad" @click="exportSceneObject()">descargar</a>
-
+    <a class="btn-grad reto" @click="exportSceneObject()">descargar</a>
+    <a class="btn-grad descarga" @click="cargaModelo()">retos</a>
     <h2 id="title_room"></h2>
+    <ul id="users"></ul>
     <input
       class="picker"
       v-model="color"
@@ -23,6 +24,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import * as THREE from "three";
 import { GLTFExporter } from "three/examples/jsm/exporters/GLTFExporter.js";
 import { io } from "socket.io-client";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 // import { saveAs } from 'file-saver';
 // import * as CSG from 'csg';
@@ -58,6 +60,10 @@ export default {
       clients: new Object(),
       id: null,
       voxel: null,
+      model2: null,
+      loader: null,
+      mixer: null,
+      clock: null,
     };
   },
   // components: { BarraHerramientas},
@@ -89,7 +95,7 @@ export default {
       // cubes
 
       this.cubeGeo = new THREE.BoxGeometry(50, 50, 50);
-      this.cubeMaterial = new THREE.MeshLambertMaterial({ color: 0xfeb74c });
+      this.cubeMaterial = new THREE.MeshLambertMaterial({ color: this.color });
 
       // Declaracion de la grilla
       const gridHelper = new THREE.GridHelper(1000, 20);
@@ -185,6 +191,13 @@ export default {
       }
     },
     onPointerDown(event) {
+      if (this.model2) {
+        this.controls.enabled = true;
+        this.scene.remove(this.model2);
+        this.model2 = null;
+        this.mixer = null;
+        console.log("descativar robot");
+      }
       this.pointer.set(
         (event.clientX / window.innerWidth) * 2 - 1,
         -(event.clientY / window.innerHeight) * 2 + 1
@@ -221,7 +234,7 @@ export default {
             .addScalar(25);
           console.log(this.voxel.position);
 
-          this.socket.emit("move", this.voxel.position);
+          this.socket.emit("move", this.voxel.position, this.color);
 
           // this.scene.add(this.voxel);
 
@@ -304,8 +317,53 @@ export default {
     },
     animate: function () {
       requestAnimationFrame(this.animate);
+      const delta = this.clock.getDelta();
+
+      if (this.mixer != null) {
+        this.mixer.update(delta);
+        // this.model2.rotation.copy(this.camera.rotation);
+        // this.model2.position =
+        // this.model2.position + this.camera.getWorldDirection * 50;
+        // console.log(this.camera.getWorldDirection);
+        this.camera.lookAt(0, 0, 0);
+        this.camera.position.set(500, 800, 1300);
+        this.controls.enabled = false;
+        var dist = 100;
+        var cwd = new THREE.Vector3();
+
+        this.camera.getWorldDirection(cwd);
+
+        cwd.multiplyScalar(dist);
+        cwd.add(this.camera.position);
+
+        this.model2.position.set(cwd.x + 45, cwd.y - 55, cwd.z);
+        this.model2.setRotationFromQuaternion(this.camera.quaternion);
+      }
       this.onWindowResize();
       this.renderer.render(this.scene, this.camera);
+    },
+    cargaModelo() {
+      this.loader = new GLTFLoader();
+      this.loader.load("models/RobotExpressive.glb", (gltf) => {
+        console.log(gltf);
+        this.gltf = gltf;
+        this.model2 = gltf.scene;
+        this.model2.scale.set(15, 15, 15);
+        this.model2.position.x = this.camera.position.x;
+        this.model2.position.y = this.camera.position.y - 150;
+        this.model2.position.z = this.camera.position.z - 150;
+
+        console.log(this.model2);
+        this.scene.add(this.model2);
+        this.mixer = new THREE.AnimationMixer(this.model2);
+        this.mixer.clipAction(gltf.animations[12]).play();
+      }),
+        (xhr) => {
+          console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
+        },
+        (error) => {
+          console.error(error);
+        };
     },
   },
   mounted() {
@@ -313,6 +371,7 @@ export default {
     this.animate();
   },
   created() {
+    this.clock = new THREE.Clock();
     this.socket = io("http://localhost:8080/");
 
     this.socket.on("newUserConnected", (clientCount, _id) => {
@@ -343,6 +402,7 @@ export default {
             document.getElementById("title_room").innerText =
               "Estas en la sala: " + this.user.room;
             console.log("Estas en la sala: " + this.user.room);
+            document.getElementById("message-area").style.display = "block";
             // this.sendToDad();
             // $messageArea.show();
             // $loginArea.hide("slow");
@@ -353,7 +413,43 @@ export default {
       );
       // });
     });
+    this.socket.on("message", (message) => {
+      console.log("entro");
+      // var momentTimestamp = moment.utc(message.timestamp);
+      var hoy = new Date();
+      var hora =
+        hoy.getHours() + ":" + hoy.getMinutes() + ":" + hoy.getSeconds();
 
+      var messages = document.getElementById("messages");
+      messages.innerHTML +=
+        "<p><strong>" +
+        message.username +
+        '</strong> <span class="time">' +
+        hora +
+        "</span></p>";
+      messages.innerHTML +=
+        '<div class="wrap-msg"><p>' + message.text + "</p></div>";
+      // scrollSmoothToBottom("messages");
+    });
+
+    document.getElementById("message-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      var message = document.getElementById("message");
+      console.log(message);
+
+      // var username = this.username;
+      var reg = /<(.|\n)*?>/g;
+      if (reg.test(message.value) == true) {
+        alert("Sorry, that is not allowed!");
+      } else {
+        console.log("va a emitir el mensjae", this.user.username);
+        this.socket.emit("message", {
+          username: this.user.username,
+          text: message.value,
+        });
+      }
+      message.value = "";
+    });
     this.socket.on("introduction", (_id, _clientNum, _ids) => {
       for (let i = 0; i < _ids.length; i++) {
         if (_ids[i] != _id) {
@@ -376,9 +472,16 @@ export default {
       console.log("Mi ID es: " + this.id);
     });
 
-    this.socket.on("actualizar", (_id) => {
-      console.log(_id + "se a conectado");
-      this.socket.emit("actualizarEscena", this.objects);
+    this.socket.on("usuariosConectados", (user) => {
+      console.log(user, "conectado en la sala");
+      let fragment = "";
+      for (let i = 0; i < user.length; i++) {
+        if (user[i] != null) {
+          fragment += `<li style="margin:0 1rem;padding: 0.5rem;background: green;">${user[i].username} </li>`;
+        }
+      }
+
+      document.getElementById("users").innerHTML = fragment;
     });
     this.socket.on(
       "removeVoxelScene",
@@ -411,7 +514,7 @@ export default {
 
     this.socket.on(
       "userPositionsVoxels",
-      (clientCount, _id, _ids, voxelPosition) => {
+      (clientCount, _id, _ids, voxelPosition, color) => {
         console.log(voxelPosition);
 
         console.log(this.id, _id);
@@ -419,8 +522,10 @@ export default {
 
         if (_id != this.id) {
           console.log("id del que puso el voxel:" + _id);
+          let cubeMaterialaux = new THREE.MeshLambertMaterial({ color: color });
+
           this.clients[_id] = {
-            mesh: new THREE.Mesh(this.cubeGeo, this.cubeMaterial),
+            mesh: new THREE.Mesh(this.cubeGeo, cubeMaterialaux),
           };
 
           console.log("recibiendo posicion voxel");
@@ -450,6 +555,15 @@ export default {
 </script>
 
 <style scoped>
+#users {
+  list-style: none;
+  position: absolute;
+  color: white;
+  font-weight: bold;
+  display: flex;
+  right: 0;
+}
+
 .btn-grad {
   width: fit-content;
   background-image: linear-gradient(
@@ -470,8 +584,13 @@ export default {
   display: block;
   position: absolute;
   bottom: 5rem;
-  left: 0;
+  /* left: 0; */
   right: 0;
+  top: 0;
+  height: fit-content;
+}
+.descarga {
+  bottom: 20rem;
 }
 
 .btn-grad:hover {
@@ -498,5 +617,11 @@ export default {
 }
 .picker {
   position: absolute;
+  right: 0;
+  /* width: fit-content;
+  height: fit-content; */
+  top: 0;
+  bottom: -10rem;
+  margin: auto;
 }
 </style>

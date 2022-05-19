@@ -1,5 +1,6 @@
 <template>
   <div>
+    <chat-canvas></chat-canvas>
     <barra-herramientas />
     <bienvenido-page
       v-if="mostrarModal"
@@ -14,6 +15,7 @@
 import BarraHerramientas from "@/components/BarraHerramientas.vue";
 import BienvenidoPage from "@/components/BienvenidoPage.vue";
 import EscenaVox from "@/components/EscenaVox.vue";
+import ChatCanvas from "@/components/ChatCanvas.vue";
 export default {
   data() {
     return {
@@ -23,7 +25,7 @@ export default {
       room: "",
     };
   },
-  components: { BarraHerramientas, BienvenidoPage, EscenaVox},
+  components: { BarraHerramientas, BienvenidoPage, EscenaVox, ChatCanvas },
   methods: {
     setValues(obj) {
       this.mostrarsala = obj.mostrarSala;

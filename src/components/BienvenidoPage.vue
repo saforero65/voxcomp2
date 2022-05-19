@@ -53,7 +53,7 @@
       <div class="sala">
         <h1>UNIRSE A UNA SALA</h1>
         <p>Ingresa el nombre se la sala</p>
-        <input type="text" class="input" />
+        <input v-model="room" type="text" class="input" />
         <div class="botones2">
           <button class="btn1" @click="Atras()"><a>Atrás</a></button>
           <button :disabled="room === ''" class="btn1" @click="sendToDad()">
