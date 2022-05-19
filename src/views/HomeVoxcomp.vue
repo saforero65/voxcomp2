@@ -23,7 +23,7 @@ export default {
       room: "",
     };
   },
-  components: { BarraHerramientas, BienvenidoPage, EscenaVox },
+  components: { BarraHerramientas, BienvenidoPage, EscenaVox},
   methods: {
     setValues(obj) {
       this.mostrarsala = obj.mostrarSala;
