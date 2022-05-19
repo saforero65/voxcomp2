@@ -53,6 +53,12 @@ body {
   margin: 0;
   padding: 0;
   background-color: black;
+  background-image: url("./assets/Modelo-8.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+  background-size: 62%;
+  overflow-x: none;
 }
 .informacion {
   display: none;

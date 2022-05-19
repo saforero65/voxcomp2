@@ -3,17 +3,31 @@
     <!-- <span>{{ user }}</span> -->
     <!-- <barra-herramientas /> -->
 
-    <a class="btn-grad reto" @click="exportSceneObject()">descargar</a>
-    <a class="btn-grad descarga" @click="cargaModelo()">retos</a>
-    <h2 id="title_room"></h2>
     <ul id="users"></ul>
-    <input
-      class="picker"
-      v-model="color"
-      type="color"
-      value="#0f0f0f"
-      @input="CambioColor()"
-    />
+
+    <!-- <br /> -->
+    <div class="logo" @click="reload()">
+      <img src="../assets/Voxcomp-8.png" alt="voxcomp logo" />
+    </div>
+
+    <h2 id="title_room"></h2>
+    <div class="menuchiki">
+      <div class="contmc">
+        <input
+          id="colorpicker"
+          v-model="color"
+          type="color"
+          @input="CambioColor()"
+        />
+        <img src="../assets/Agregar.png" alt="AgregarObjeto" />
+        <img src="../assets/Quitar.png" alt="QuitarObjeto" />
+        <img
+          src="../assets/descargar.jpg"
+          alt="Descargar"
+          @click="exportSceneObject()"
+        />
+      </div>
+    </div>
   </div>
 </template>
 <script>
@@ -85,7 +99,7 @@ export default {
 
       const rollOverGeo = new THREE.BoxGeometry(50, 50, 50);
       this.rollOverMaterial = new THREE.MeshBasicMaterial({
-        color: 0xff0000,
+        color: 0xffffff,
         opacity: 0.5,
         transparent: true,
       });
@@ -365,6 +379,9 @@ export default {
           console.error(error);
         };
     },
+    reload() {
+      location.reload();
+    },
   },
   mounted() {
     this.init();
@@ -602,6 +619,66 @@ export default {
 
 .menu {
   position: absolute;
+}
+.logo {
+  position: absolute;
+  width: fit-content;
+  height: fit-content;
+  margin: auto;
+  left: 0;
+  right: 0;
+  top: 0;
+}
+.logo img {
+  height: 5vh;
+}
+.menuchiki {
+  position: fixed;
+  top: 35vh;
+  right: 2vh;
+}
+.menuchiki::before {
+  /* height: 110%; */
+  width: 130%;
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 1vh;
+  padding: 3px; /* control the border thickness */
+  background: linear-gradient(
+    0deg,
+    rgb(217, 255, 0),
+    red,
+    #f0f,
+    blueviolet,
+    blue,
+    aqua,
+    #0f0,
+    rgb(217, 255, 0)
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+.contmc {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* border:solid 2px #0f0; */
+  width: 135%;
+  height: 110%;
+  padding: 2vh 0;
+}
+.menuchiki img {
+  width: 5vh;
+  margin: 5px;
+}
+#colorpicker {
+  width: 4.6vh;
+  height: 5vh;
+  margin: 5px;
+  margin-bottom: 10px;
 }
 #title_room {
   color: white;

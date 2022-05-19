@@ -2,6 +2,13 @@
   <div>
     <chat-canvas></chat-canvas>
     <barra-herramientas />
+      <!-- <div class="informacion" id="informacionID" style=" z-index=100 , display=none">
+            <button id="closebtn" @click="cerrar()" ><a>x</a></button>
+            <BienvenidoPage/>
+      </div> -->
+      <!-- <button style="border:none; background-color: #D1D2F3" @click="mostrarinformacion()">
+        VOXCOMPPP
+      </button> -->
     <bienvenido-page
       v-if="mostrarModal"
       class="modal"
@@ -36,6 +43,13 @@ export default {
       document.querySelector(".background").style.display = "none";
       // console.log(this.username, this.room);
     },
+    // mostrarinformacion() {
+    //   this.mostrarModal=true;
+    // },
+    // cerrar() {
+    //   var x = document.getElementById("informacionID");
+    //   x.style.display = "none";
+    // },
   },
 };
 </script>
