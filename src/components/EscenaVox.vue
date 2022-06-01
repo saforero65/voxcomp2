@@ -21,22 +21,20 @@
     <h2 id="title_room"></h2>
     <div class="menuchiki">
       <div class="contmc">
+          
+        <img src="../assets/Agregar.png" alt="AgregarObjeto" id="crearbtn" @click="crear()">
+        <img src="../assets/Quitar.png" alt="QuitarObjeto" id="destroybtn" @click="destruir()">
+        <img  src="../assets/Formas.png" alt="CambiarForma" id="dropdownMenuButton" data-bs-toggle="dropdown">            
+        <input id="colorpicker" v-model="color" type="color" @input='CambioColor()'>
+        <!-- <img src="../assets/descargar.jpg" alt="Descargar" @click="exportSceneObject()"> -->
+        <img src="../assets/Descargar.png" alt="Descargar" @click="exportSceneObject()">
         <div class="dropdown">
-          <button type="button" id="dropdownMenuButton" data-bs-toggle="dropdown">
-            <img  src="../assets/Formas.png" alt="CambiarForma">            
-          </button>
           <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
             <li><a class="dropdown-item" @click='cubo()'>Cubo</a></li>
             <li><a class="dropdown-item" @click='cono()'>Cono</a></li>
             <li><a class="dropdown-item" @click='cilin()'>Cilindro</a></li>
           </ul>
         </div>
-          
-        <img src="../assets/Agregar.png" alt="AgregarObjeto">
-        <img src="../assets/Quitar.png" alt="QuitarObjeto">
-        <input id="colorpicker" v-model="color" type="color" @input='CambioColor()'>
-        <!-- <img src="../assets/descargar.jpg" alt="Descargar" @click="exportSceneObject()"> -->
-        <img src="../assets/descargar.jpg" alt="Descargar" @click="exportSceneObject()">
       </div>
     </div>
   </div>
@@ -71,6 +69,7 @@ export default {
       rollOverMesh: null,
       cubeGeo: null,
       cubeMaterial: null,
+      boolmod:true,
       objects: [],
       controls: null,
       color: this.color,
@@ -198,6 +197,22 @@ export default {
       this.rollOverMesh = new THREE.Mesh(this.rollOverGeo, this.rollOverMaterial);
       this.scene.add(this.rollOverMesh);
     },
+    crear(){
+      this.boolmod = true;
+      console.log("CREAR");
+      var x = document.getElementById("crearbtn");
+      var y = document.getElementById("destroybtn");
+      y.style.opacity= 0.5;
+      x.style.opacity= 1;
+    },
+    destruir(){
+      this.boolmod = false;
+      console.log("DESTRUIR");
+      var x = document.getElementById("crearbtn");
+      var y = document.getElementById("destroybtn");
+      x.style.opacity= 0.5;
+      y.style.opacity= 1;
+    },
     onWindowResize() {
       this.camera.aspect = window.innerWidth / window.innerHeight;
       this.camera.updateProjectionMatrix();
@@ -261,8 +276,7 @@ export default {
         const intersect = intersects[0];
 
         // delete cube
-
-        if (this.isShiftDown) {
+        if (this.isShiftDown || !this.boolmod) {
           if (intersect.object !== this.plane) {
             this.scene.remove(intersect.object);
 
@@ -271,8 +285,10 @@ export default {
             this.socket.emit("removeVoxel", intersect.object.position);
           }
 
+
           // create cube
-        } else {
+        } 
+        else {
           this.voxel = new THREE.Mesh(this.cubeGeo, this.cubeMaterial);
 
           this.voxel.position.copy(intersect.point).add(intersect.face.normal);
@@ -594,22 +610,22 @@ export default {
   padding: 2vh 0;
 }
 .menuchiki img{
-  width: 5vh;
-  margin: 5px;
+  width: 4vh;
+  margin: 20%;
+  cursor:pointer;
 }
 .top{
   display: flex;
   justify-content: space-between;
   padding: 0px 1%;
 }
-.Menudropdown img{
-  width: 7vh;
-}
+
 #colorpicker{
   width: 4.6vh;
   height: 5vh;
   margin: 5px;
   margin-bottom: 10px;
+  cursor:pointer;
 }
 #title_room {
   color: white;
@@ -646,5 +662,8 @@ export default {
     --bs-offcanvas-border-width: 1px;
     /* --bs-offcanvas-border-color: var(--bs-border-color-translucent); */
     --bs-offcanvas-box-shadow: 0 0.125rem 0.25remrgba(0, 0, 0, 0.075);
+}
+#destroybtn{
+  opacity: 0.5;
 }
 </style>
