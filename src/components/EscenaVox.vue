@@ -53,6 +53,8 @@ export default {
   props: ["user"],
   data() {
     return {
+      objectsActualizar: [],
+      users: [],
       username: "",
       room: "",
       camera: null,
@@ -68,7 +70,7 @@ export default {
       cubeMaterial: null,
       objects: [],
       controls: null,
-      color: this.color,
+      color: "#ffffff",
       params: {
         trs: false,
         onlyVisible: true,
@@ -262,6 +264,10 @@ export default {
 
           this.scene.add(this.voxel);
           this.objects.push(this.voxel);
+          this.objectsActualizar.push({
+            position: this.voxel.position,
+            color: this.color,
+          });
         }
 
         // this.animate();
@@ -388,6 +394,37 @@ export default {
     reload() {
       location.reload();
     },
+    insertarUsuarios(message) {
+      if (
+        !this.users.includes(message.username) &&
+        message.username != "System"
+      )
+        this.users.push(message.username);
+      //  console.log(user, "conectado en la sala");
+      let fragment = "";
+      for (let i = 0; i < this.users.length; i++) {
+        fragment += `<li style="margin:0 1rem;padding: 0.5rem;background: green;">${this.users[i]} </li>`;
+      }
+
+      document.getElementById("users").innerHTML = fragment;
+    },
+    actualizar(array) {
+      for (let i = 0; i < array.length; i++) {
+        let cubeMaterialaux = new THREE.MeshLambertMaterial({
+          color: array[i].color,
+        });
+        let mesh = new THREE.Mesh(this.cubeGeo, cubeMaterialaux);
+        mesh.position.set(
+          array[i].position.x,
+          array[i].position.y,
+          array[i].position.z
+        );
+        this.scene.add(mesh);
+        this.objects.push(mesh);
+        console.log(mesh);
+        console.log("fubncionadno");
+      }
+    },
   },
   mounted() {
     this.init();
@@ -433,12 +470,19 @@ export default {
           } else {
             console.log(data.error);
           }
+          this.socket.emit("message", {
+            username: this.user.username,
+            text: "",
+          });
         }
       );
+
+      this.socket.emit("necesitoActulizarme", _id);
+
       // });
     });
     this.socket.on("message", (message) => {
-      console.log("entro");
+      this.insertarUsuarios(message);
       // var momentTimestamp = moment.utc(message.timestamp);
       var hoy = new Date();
       var hora =
@@ -459,7 +503,7 @@ export default {
     document.getElementById("message-form").addEventListener("submit", (e) => {
       e.preventDefault();
       var message = document.getElementById("message");
-      console.log(message);
+      // console.log(message);
 
       // var username = this.username;
       var reg = /<(.|\n)*?>/g;
@@ -496,17 +540,6 @@ export default {
       console.log("Mi ID es: " + this.id);
     });
 
-    this.socket.on("usuariosConectados", (user) => {
-      console.log(user, "conectado en la sala");
-      let fragment = "";
-      for (let i = 0; i < user.length; i++) {
-        if (user[i] != null) {
-          fragment += `<li style="margin:0 1rem;padding: 0.5rem;background: green;">${user[i].username} </li>`;
-        }
-      }
-
-      document.getElementById("users").innerHTML = fragment;
-    });
     this.socket.on(
       "removeVoxelScene",
       (clientCount, _id, _ids, voxelPosition) => {
@@ -560,9 +593,28 @@ export default {
           this.scene.add(this.clients[_id].mesh);
           this.objects.push(this.clients[_id].mesh);
         }
+        this.socket.emit("historial", this.objects);
       }
     );
 
+    this.socket.on("pasemeElArray", () => {
+      if (this.objects.length <= 1) {
+        console.log("necesita actualizar por que esta vacio");
+      } else {
+        console.log("pasando el array");
+
+        this.socket.emit("historial", this.objectsActualizar);
+      }
+    });
+    this.socket.on("actualziarNuevoUsuario", (array) => {
+      if (this.objects.length <= 1) {
+        console.log("priovado necesita actualizar por que esta vacio");
+        console.log(array);
+        this.actualizar(array);
+      } else {
+        console.log("priovado  no necesita actualizar por que ya esta al dia");
+      }
+    });
     this.socket.on("userDisconnected", (clientCount, _id) => {
       //Update the data from the server
       // document.getElementById("numUsers").textContent = clientCount;

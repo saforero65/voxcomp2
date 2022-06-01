@@ -12,7 +12,6 @@
 </template>
 <script>
 // import BienvenidoPage from "@/components/BienvenidoPage.vue";
-
 export default {
   components: {
     // BienvenidoPage,
@@ -28,6 +27,7 @@ export default {
       x.style.display = "none";
     },
   },
+  mounted() {},
 };
 </script>
 
