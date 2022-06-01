@@ -3,16 +3,39 @@
     <!-- <span>{{ user }}</span> -->
     <!-- <barra-herramientas /> -->
     <br>
-    <div class="logo" @click="reload()">
-      <img src="../assets/Voxcomp-8.png" alt="voxcomp logo">
+    <div class="top">
+      <p>.......</p>
+      <div class="logo" @click="reload()">
+        <img src="../assets/Voxcomp-8.png" alt="voxcomp logo">
+      </div>
+            
+      <button type="button" id="mbtn" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+        <img id="logomenu" src="../assets/Menu.png" alt="Menú">            
+      </button>
+
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+            <MenuJuego/>
+        </div>
     </div>
 
     <h2 id="title_room"></h2>
     <div class="menuchiki">
       <div class="contmc">
-        <input id="colorpicker" v-model="color" type="color" @input='CambioColor()'>
+        <div class="dropdown">
+          <button type="button" id="dropdownMenuButton" data-bs-toggle="dropdown">
+            <img  src="../assets/Formas.png" alt="CambiarForma">            
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <li><a class="dropdown-item" @click='cubo()'>Cubo</a></li>
+            <li><a class="dropdown-item" @click='cono()'>Cono</a></li>
+            <li><a class="dropdown-item" @click='cilin()'>Cilindro</a></li>
+          </ul>
+        </div>
+          
         <img src="../assets/Agregar.png" alt="AgregarObjeto">
         <img src="../assets/Quitar.png" alt="QuitarObjeto">
+        <input id="colorpicker" v-model="color" type="color" @input='CambioColor()'>
+        <!-- <img src="../assets/descargar.jpg" alt="Descargar" @click="exportSceneObject()"> -->
         <img src="../assets/descargar.jpg" alt="Descargar" @click="exportSceneObject()">
       </div>
     </div>
@@ -26,6 +49,7 @@
 import * as THREE from "three";
 import { GLTFExporter } from "three/examples/jsm/exporters/GLTFExporter.js";
 import { io } from "socket.io-client";
+import MenuJuego from "./MenuJuego.vue";
 
 // import { saveAs } from 'file-saver';
 // import * as CSG from 'csg';
@@ -63,7 +87,7 @@ export default {
       voxel: null,
     };
   },
-  // components: { BarraHerramientas},
+  components: { MenuJuego},
   methods: {
     init: function () {
       this.camera = new THREE.PerspectiveCamera(
@@ -151,6 +175,28 @@ export default {
       this.cubeMaterial= new THREE.MeshPhongMaterial({
         color: colornuevo,
       });
+
+    },
+    cilin(){
+      this.scene.remove(this.rollOverMesh);
+      this.cubeGeo = new THREE.CylinderGeometry( 25, 25, 50, 16 );
+      this.rollOverGeo = new THREE.CylinderGeometry( 25, 25, 50, 16 );
+      this.rollOverMesh = new THREE.Mesh(this.rollOverGeo, this.rollOverMaterial);
+      this.scene.add(this.rollOverMesh);
+    },
+    cono(){
+      this.scene.remove(this.rollOverMesh);
+      this.cubeGeo = new THREE.ConeGeometry( 25, 50, 16);
+      this.rollOverGeo = new THREE.ConeGeometry( 25, 50, 16);
+      this.rollOverMesh = new THREE.Mesh(this.rollOverGeo, this.rollOverMaterial);
+      this.scene.add(this.rollOverMesh);
+    },
+    cubo(){
+      this.scene.remove(this.rollOverMesh);
+      this.cubeGeo = new THREE.BoxGeometry(50,50,50);
+      this.rollOverGeo = new THREE.BoxGeometry(50,50,50);
+      this.rollOverMesh = new THREE.Mesh(this.rollOverGeo, this.rollOverMaterial);
+      this.scene.add(this.rollOverMesh);
     },
     onWindowResize() {
       this.camera.aspect = window.innerWidth / window.innerHeight;
@@ -469,6 +515,10 @@ export default {
 </script>
 
 <style scoped>
+.modal-dialog{
+  border: solid 2px khaki;
+  /* width: 100vw; */
+}
 .btn-grad {
   width: fit-content;
   background-image: linear-gradient(
@@ -547,6 +597,14 @@ export default {
   width: 5vh;
   margin: 5px;
 }
+.top{
+  display: flex;
+  justify-content: space-between;
+  padding: 0px 1%;
+}
+.Menudropdown img{
+  width: 7vh;
+}
 #colorpicker{
   width: 4.6vh;
   height: 5vh;
@@ -565,5 +623,28 @@ export default {
   position: absolute;
   left: 20px;
   top: 20px;
+}
+#dropdownMenuButton{
+  background-color: transparent;
+  border: none;
+}
+#mbtn{
+    background-color: transparent;
+  /* border: none; */
+}
+#logomenu{
+  width: 70%;
+}
+.offcanvas, .offcanvas-lg, .offcanvas-md, .offcanvas-sm, .offcanvas-xl, .offcanvas-xxl {
+    --bs-offcanvas-width: 40vh;
+    /* --bs-offcanvas-height: 10vh; */
+    /* --bs-offcanvas-padding-x: 1rem; */
+    --bs-offcanvas-mrgin-top: 2%;
+    --bs-offcanvas-padding-y: 1rem;
+    --bs-offcanvas-color: ;
+    --bs-offcanvas-bg: #00000000;
+    --bs-offcanvas-border-width: 1px;
+    /* --bs-offcanvas-border-color: var(--bs-border-color-translucent); */
+    --bs-offcanvas-box-shadow: 0 0.125rem 0.25remrgba(0, 0, 0, 0.075);
 }
 </style>
