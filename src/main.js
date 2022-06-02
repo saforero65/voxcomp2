@@ -7,6 +7,7 @@ import {
   faMinimize,
   faShapes,
   faVolumeHigh,
+  faVolumeOff,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import Vue from "vue";
@@ -21,7 +22,8 @@ library.add(
   faVolumeHigh,
   faMinimize,
   faForward,
-  faShapes
+  faShapes,
+  faVolumeOff
 );
 Vue.component("font-awesome-icon", FontAwesomeIcon);
 
@@ -31,6 +33,16 @@ const gauthOption = {
   scope: "profile email",
   prompt: "consent",
   fetch_basic_profile: true,
+};
+Vue.prototype.$launchAudio = function (music) {
+  let audio = music;
+  audio.play();
+  return false;
+};
+Vue.prototype.$muteAudio = function (music) {
+  let audio = music;
+  audio.pause();
+  return true;
 };
 Vue.use(GAuth, gauthOption);
 Vue.config.productionTip = false;

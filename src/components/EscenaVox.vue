@@ -22,7 +22,7 @@
         @click="unNone()"
       />
     </button>
-    <div class="top" id="form" >
+    <div class="top" id="form">
       <div class="logo" @click="reload()">
         <img src="../assets/Voxcomp-8.png" alt="voxcomp logo" />
       </div>
@@ -83,10 +83,9 @@
         <!-- <img src="../assets/descargar.jpg" alt="Descargar" @click="exportSceneObject()"> -->
       </div>
     </div>
-    <div class="cont2" style="display:none">
-      <div v-if="reto==1">
-        <MensajeReto1 @retosc="CerrarReto">
-        </MensajeReto1>
+    <div class="cont2" style="display: none">
+      <div v-if="reto == 1">
+        <MensajeReto1 @retosc="CerrarReto"> </MensajeReto1>
       </div>
       <div v-if="reto == 2">
         <MensajeReto2 @retosc="CerrarReto"> </MensajeReto2>
@@ -250,16 +249,16 @@ export default {
       var x = document.getElementById("offcanvasRight");
       var y = document.querySelector(".offcanvas-backdrop.fade.show");
       var z = document.querySelector(".cont2");
-      x.style.display= "none";
-      y.style.display= "none";
-      z.style.display= "block";
+      x.style.display = "none";
+      y.style.display = "none";
+      z.style.display = "block";
       document.getElementById("message-area").style.transform =
-      "translateX(-500px)";
+        "translateX(-500px)";
     },
     CerrarReto(obj) {
       console.log(obj);
       var z = document.querySelector(".cont2");
-      z.style.display= "none";
+      z.style.display = "none";
 
       this.controls.enabled = true;
       this.scene.remove(this.model2);
@@ -436,7 +435,7 @@ export default {
           this.scene.remove(this.scene.children[i]);
         }
       }
-      if (this.scene.children.length > 5) {
+      if (this.scene.children.length > 6) {
         this.resetScene();
       }
     },
@@ -545,7 +544,7 @@ export default {
         this.model2.position.x = this.camera.position.x;
         this.model2.position.y = this.camera.position.y - 100;
         this.model2.position.z = this.camera.position.z - 150;
-
+        this.model2.name = "noBorrar";
         console.log(this.model2);
         this.scene.add(this.model2);
         this.mixer = new THREE.AnimationMixer(this.model2);
@@ -604,8 +603,8 @@ export default {
   },
   created() {
     this.clock = new THREE.Clock();
-    this.socket = io("http://localhost:8080/");
-    // this.socket = io("https://prueba-voxcomp.herokuapp.com/");
+    // this.socket = io("http://localhost:8080/");
+    this.socket = io("https://prueba-voxcomp.herokuapp.com/");
 
     this.socket.on("newUserConnected", (clientCount, _id) => {
       console.log(clientCount + " usuarios conectados");
@@ -951,7 +950,7 @@ export default {
   margin: auto;
   width: fit-content;
 }
-#form{
+#form {
   width: 7vh;
   display: flex;
   align-items: center;
@@ -1031,11 +1030,10 @@ export default {
 #users {
   margin-right: 4rem;
 }
-h2{
+h2 {
   font-family: "Oswald";
   font-size: 2vw;
   letter-spacing: 0.2vw;
   /* font-weight: bold; */
 }
-
 </style>

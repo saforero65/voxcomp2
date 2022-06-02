@@ -1,5 +1,6 @@
 <template>
   <div>
+    <audio ref="audio" src="../file.mp3" preload loop muted></audio>
     <nav>
       <ul>
         <li><router-link to="/">Ingenieria Multimedia</router-link></li>
@@ -19,7 +20,18 @@
             class="icon"
             icon="fa-solid fa-minimize"
           />
-          <font-awesome-icon class="icon" icon="fa-solid fa-volume-high" />
+          <font-awesome-icon
+            v-if="play"
+            class="icon"
+            icon="fa-solid fa-volume-off"
+            @click="launchAudio()"
+          />
+          <font-awesome-icon
+            v-else
+            class="icon"
+            icon="fa-solid fa-volume-high"
+            @click="muteAudio()"
+          />
         </li>
       </ul>
     </nav>
@@ -30,10 +42,19 @@ export default {
   name: "BarraHerammientas",
   data() {
     return {
+      play: false,
       expandir: true,
     };
   },
   methods: {
+    launchAudio() {
+      this.play = this.$launchAudio(this.$refs.audio);
+      console.log(this.play);
+    },
+    muteAudio() {
+      this.play = this.$muteAudio(this.$refs.audio);
+      console.log(this.play);
+    },
     launchFullScreen() {
       let element = document.documentElement;
       if (element.requestFullScreen) {
