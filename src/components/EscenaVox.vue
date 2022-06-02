@@ -40,7 +40,7 @@
           src="../assets/Agregar.png"
           alt="AgregarObjeto"
           id="crearbtn"
-          @click="crear()"
+          @click="cargaModelo()"
         />
         <img
           src="../assets/Quitar.png"
