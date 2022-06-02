@@ -9,11 +9,13 @@
     <!-- <button style="border:none; background-color: #D1D2F3" @click="mostrarinformacion()">
         VOXCOMPPP
       </button> -->
+
     <bienvenido-page
       v-if="mostrarModal"
       class="modal"
       @getValues="setValues"
     ></bienvenido-page>
+    <!-- <MensajeReto/> -->
     <div class="background"></div>
     <escena-vox
       v-if="mostrarsala"
@@ -26,6 +28,7 @@ import BarraHerramientas from "@/components/BarraHerramientas.vue";
 import BienvenidoPage from "@/components/BienvenidoPage.vue";
 import EscenaVox from "@/components/EscenaVox.vue";
 import ChatCanvas from "@/components/ChatCanvas.vue";
+// import MensajeReto from "@/components/MensajeReto.vue";
 export default {
   data() {
     return {
@@ -36,7 +39,11 @@ export default {
       image: "",
     };
   },
-  components: { BarraHerramientas, BienvenidoPage, EscenaVox, ChatCanvas },
+  components: { BarraHerramientas, 
+  BienvenidoPage, 
+  EscenaVox, ChatCanvas, 
+  // MensajeReto 
+  },
   methods: {
     setValues(obj) {
       this.mostrarsala = obj.mostrarSala;

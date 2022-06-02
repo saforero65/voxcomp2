@@ -15,10 +15,9 @@
       data-bs-target="#offcanvasRight"
       aria-controls="offcanvasRight"
     >
-      <img id="logomenu" src="../assets/Menu.png" alt="Menú" />
+      <img id="logomenu" src="../assets/Menu.png" alt="Menú" @click="unNone()"/>
     </button>
     <div class="top">
-      <p>.......</p>
       <div class="logo" @click="reload()">
         <img src="../assets/Voxcomp-8.png" alt="voxcomp logo" />
       </div>
@@ -29,7 +28,9 @@
         id="offcanvasRight"
         aria-labelledby="offcanvasRightLabel"
       >
-        <MenuJuego />
+        <MenuJuego @retos="MostrarReto">
+
+        </MenuJuego>
       </div>
     </div>
 
@@ -77,6 +78,23 @@
         </div>
       </div>
     </div>
+    <div class="cont" style="display:none">
+      <div v-if="reto==1">
+        <MensajeReto1 @retosc="CerrarReto">
+        </MensajeReto1>
+      </div>
+      <div v-if="reto==2">
+        <MensajeReto2 @retosc="CerrarReto">
+        </MensajeReto2>
+      </div>
+      <div v-if="reto==3">
+        <MensajeReto3 @retosc="CerrarReto">
+        </MensajeReto3>
+      </div>
+    </div>
+    
+    <!-- <div v-if="mensaje" class="mensajes">
+    </div> -->
   </div>
 </template>
 <script>
@@ -89,6 +107,10 @@ import { GLTFExporter } from "three/examples/jsm/exporters/GLTFExporter.js";
 import { io } from "socket.io-client";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import MenuJuego from "./MenuJuego.vue";
+import MensajeReto1 from "./MensajeReto1.vue";
+import MensajeReto2 from "./MensajeReto2.vue";
+import MensajeReto3 from "./MensajeReto3.vue";
+
 // import { fas } from "@fortawesome/free-solid-svg-icons";
 
 // import { saveAs } from 'file-saver';
@@ -134,9 +156,11 @@ export default {
       loader: null,
       mixer: null,
       clock: null,
+      mensaje: null,
+      reto: 0,
     };
   },
-  components: { MenuJuego },
+  components: { MenuJuego, MensajeReto1, MensajeReto2, MensajeReto3 },
   methods: {
     init: function () {
       this.camera = new THREE.PerspectiveCamera(
@@ -203,6 +227,35 @@ export default {
       document.addEventListener("pointerdown", this.onPointerDown);
       document.addEventListener("keydown", this.onDocumentKeyDown);
       document.addEventListener("keyup", this.onDocumentKeyUp);
+    },
+    unNone(){
+      var x = document.getElementById("offcanvasRight");
+      var y = document.querySelector(".offcanvas-backdrop.fade.show");
+      x.style.display= "block";
+      y.style.display= "block";
+    },
+    MostrarReto(obj){
+      
+      this.reto=obj.opcion;
+      // this.null=true;
+      this.CargaModelo();
+      var x = document.getElementById("offcanvasRight");
+      var y = document.querySelector(".offcanvas-backdrop.fade.show");
+      var z = document.querySelector(".cont");
+      x.style.display= "none";
+      y.style.display= "none";
+      z.style.display= "block";
+    },
+    CerrarReto(obj){
+      console.log(obj);
+      var z = document.querySelector(".cont");
+      z.style.display= "none";
+
+      this.controls.enabled = true;
+      this.scene.remove(this.model2);
+      this.model2 = null;
+      this.mixer = null;
+      console.log("descativar robot");
     },
     CambioColor() {
       var colornuevo = new THREE.Color(this.color);
@@ -307,13 +360,6 @@ export default {
       }
     },
     onPointerDown(event) {
-      if (this.model2) {
-        this.controls.enabled = true;
-        this.scene.remove(this.model2);
-        this.model2 = null;
-        this.mixer = null;
-        console.log("descativar robot");
-      }
       this.pointer.set(
         (event.clientX / window.innerWidth) * 2 - 1,
         -(event.clientY / window.innerHeight) * 2 + 1
@@ -466,7 +512,7 @@ export default {
       this.onWindowResize();
       this.renderer.render(this.scene, this.camera);
     },
-    cargaModelo() {
+    CargaModelo() {
       this.loader = new GLTFLoader();
       this.loader.load("models/RobotExpressive.glb", (gltf) => {
         console.log(gltf);
@@ -531,6 +577,7 @@ export default {
   mounted() {
     this.init();
     this.animate();
+    // this.reto();
   },
   created() {
     this.clock = new THREE.Clock();

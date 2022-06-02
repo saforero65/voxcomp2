@@ -56,7 +56,7 @@
     <div id="crearS" style="display: none">
       <div class="sala">
         <h1>NUEVA SALA</h1>
-        <p>Ingresa el nombre se la sala</p>
+        <p>Ingresa el nombre de la sala</p>
         <input type="text" class="input" v-model="room" />
         <div class="botones2">
           <button class="btn1" @click="Atras()"><a>Atrás</a></button>
@@ -74,12 +74,12 @@
     <div id="unirse" style="display: none">
       <div class="sala">
         <h1>UNIRSE A UNA SALA</h1>
-        <p>Ingresa el nombre se la sala</p>
+        <p>Ingresa el nombre de la sala</p>
         <input v-model="room" type="text" class="input" />
         <div class="botones2">
           <button class="btn1" @click="Atras()"><a>Atrás</a></button>
           <button :disabled="room === ''" class="btn1" @click="sendToDad()">
-            <a>CREAR</a>
+            <a>UNIRSE</a>
           </button>
         </div>
       </div>

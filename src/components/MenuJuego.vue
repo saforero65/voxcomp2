@@ -34,9 +34,9 @@
                     <img class="imgmenu" src="../assets/Retos.png" alt="modolibre">
                 </div>
                 <div class="botones">
-                    <button class="btn1"><a>Reto 1</a></button>
-                    <button class="btn1"><a>Reto 2</a></button>
-                    <button class="btn1"><a>Reto 3</a></button>
+                    <button class="btn1" @click="opc=1,ExportarPa()"><a>Reto 1</a></button>
+                    <button class="btn1" @click="opc=2,ExportarPa()"><a>Reto 2</a></button>
+                    <button class="btn1" @click="opc=3,ExportarPa()"><a>Reto 3</a></button>
                 </div>
             </div>
             </div>
@@ -63,7 +63,19 @@
 
 <script>
 export default {
-
+    data(){
+        return{
+            opc:0
+        }
+    },
+    methods:{
+        ExportarPa(){
+            this.$emit("retos",{
+                opcion: this.opc
+            })
+            console.log("opcion",this.opc);
+        }
+    }
 }
 </script>
 
