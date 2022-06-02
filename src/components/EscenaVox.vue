@@ -15,7 +15,12 @@
       data-bs-target="#offcanvasRight"
       aria-controls="offcanvasRight"
     >
-      <img id="logomenu" src="../assets/Menu.png" alt="Menú" @click="unNone()"/>
+      <img
+        id="logomenu"
+        src="../assets/Menu.png"
+        alt="Menú"
+        @click="unNone()"
+      />
     </button>
     <div class="top">
       <div class="logo" @click="reload()">
@@ -28,9 +33,7 @@
         id="offcanvasRight"
         aria-labelledby="offcanvasRightLabel"
       >
-        <MenuJuego @retos="MostrarReto">
-
-        </MenuJuego>
+        <MenuJuego @retos="MostrarReto"> </MenuJuego>
       </div>
     </div>
 
@@ -62,6 +65,11 @@
           alt="Descargar"
           @click="exportSceneObject()"
         />
+        <img
+          src="../assets/Descargar.png"
+          alt="Descargar"
+          @click="resetScene()"
+        />
         <div class="dropdown">
           <button
             type="button"
@@ -78,21 +86,18 @@
         </div>
       </div>
     </div>
-    <div class="cont" style="display:none">
-      <div v-if="reto==1">
-        <MensajeReto1 @retosc="CerrarReto">
-        </MensajeReto1>
+    <div class="cont" style="display: none">
+      <div v-if="reto == 1">
+        <MensajeReto1 @retosc="CerrarReto"> </MensajeReto1>
       </div>
-      <div v-if="reto==2">
-        <MensajeReto2 @retosc="CerrarReto">
-        </MensajeReto2>
+      <div v-if="reto == 2">
+        <MensajeReto2 @retosc="CerrarReto"> </MensajeReto2>
       </div>
-      <div v-if="reto==3">
-        <MensajeReto3 @retosc="CerrarReto">
-        </MensajeReto3>
+      <div v-if="reto == 3">
+        <MensajeReto3 @retosc="CerrarReto"> </MensajeReto3>
       </div>
     </div>
-    
+
     <!-- <div v-if="mensaje" class="mensajes">
     </div> -->
   </div>
@@ -184,6 +189,8 @@ export default {
         transparent: true,
       });
       this.rollOverMesh = new THREE.Mesh(rollOverGeo, this.rollOverMaterial);
+      this.rollOverMesh.name = "noBorrar";
+
       this.scene.add(this.rollOverMesh);
 
       // cubes
@@ -193,6 +200,7 @@ export default {
 
       // Declaracion de la grilla
       const gridHelper = new THREE.GridHelper(1000, 20);
+      gridHelper.name = "noBorrar";
       this.scene.add(gridHelper);
 
       this.raycaster = new THREE.Raycaster();
@@ -201,21 +209,23 @@ export default {
       // Plane
       const geometry = new THREE.PlaneGeometry(1000, 1000);
       geometry.rotateX(-Math.PI / 2);
-
       this.plane = new THREE.Mesh(
         geometry,
         new THREE.MeshBasicMaterial({ visible: false, color: 0xf0f0f0 })
       );
+      this.plane.name = "noBorrar";
       this.scene.add(this.plane);
       this.objects.push(this.plane);
 
       // lights
 
       const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+      ambientLight.name = "noBorrar";
       this.scene.add(ambientLight);
 
       const directionalLight = new THREE.DirectionalLight(0xffffff, 2);
       directionalLight.position.set(1, 0.75, 0.5).normalize();
+      directionalLight.name = "noBorrar";
       this.scene.add(directionalLight);
 
       this.renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -228,28 +238,28 @@ export default {
       document.addEventListener("keydown", this.onDocumentKeyDown);
       document.addEventListener("keyup", this.onDocumentKeyUp);
     },
-    unNone(){
+    unNone() {
       var x = document.getElementById("offcanvasRight");
       var y = document.querySelector(".offcanvas-backdrop.fade.show");
-      x.style.display= "block";
-      y.style.display= "block";
+      x.style.display = "block";
+      y.style.display = "block";
     },
-    MostrarReto(obj){
-      
-      this.reto=obj.opcion;
+    MostrarReto(obj) {
+      this.reto = obj.opcion;
+      this.socket.emit("resetScena", this.id);
       // this.null=true;
       this.CargaModelo();
       var x = document.getElementById("offcanvasRight");
       var y = document.querySelector(".offcanvas-backdrop.fade.show");
       var z = document.querySelector(".cont");
-      x.style.display= "none";
-      y.style.display= "none";
-      z.style.display= "block";
+      x.style.display = "none";
+      y.style.display = "none";
+      z.style.display = "block";
     },
-    CerrarReto(obj){
+    CerrarReto(obj) {
       console.log(obj);
       var z = document.querySelector(".cont");
-      z.style.display= "none";
+      z.style.display = "none";
 
       this.controls.enabled = true;
       this.scene.remove(this.model2);
@@ -417,6 +427,19 @@ export default {
         // this.animate();
       }
     },
+    resetScene() {
+      console.log(this.scene.children.length);
+      for (let i = 0; i < this.scene.children.length; i++) {
+        // console.log(this.scene.children[i].geometry);
+        if (this.scene.children[i].name != "noBorrar") {
+          //   console.log("borrado", i);
+          this.scene.remove(this.scene.children[i]);
+        }
+      }
+      if (this.scene.children.length > 5) {
+        this.resetScene();
+      }
+    },
     export() {
       // Instantiate a exporter
       const exporter = new GLTFExporter();
@@ -577,12 +600,12 @@ export default {
   mounted() {
     this.init();
     this.animate();
-    // this.reto();
+    console.log(this.scene.children);
   },
   created() {
     this.clock = new THREE.Clock();
-    // this.socket = io("http://localhost:8080/");
-    this.socket = io("https://prueba-voxcomp.herokuapp.com/");
+    this.socket = io("http://localhost:8080/");
+    // this.socket = io("https://prueba-voxcomp.herokuapp.com/");
 
     this.socket.on("newUserConnected", (clientCount, _id) => {
       console.log(clientCount + " usuarios conectados");
@@ -772,6 +795,10 @@ export default {
 
         this.socket.emit("historial", this.objectsActualizar);
       }
+    });
+    this.socket.on("borrarScena", (e) => {
+      console.log("recibiendo el server reset escena", e);
+      this.resetScene();
     });
     this.socket.on("actualziarNuevoUsuario", (array) => {
       if (this.objects.length <= 1) {
