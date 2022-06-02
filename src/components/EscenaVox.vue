@@ -563,8 +563,10 @@ export default {
         },
         (data) => {
           if (data.nameAvailable) {
-            document.getElementById("title_room").innerText =
-              "Estas en la sala: " + this.user.room;
+            document.getElementById("title_room").innerHTML =
+              'Estas en la sala: <span style=" font-weight: bold"> ' +
+              this.user.room +
+              "</span>";
             console.log("Estas en la sala: " + this.user.room);
             document.getElementById("message-area").style.display = "block";
             // this.sendToDad();
@@ -813,10 +815,10 @@ export default {
   position: absolute;
 }
 .logo {
-  position: absolute;
+  position: fixed;
   width: fit-content;
   height: fit-content;
-  margin: auto;
+  margin: 1rem auto;
   left: 0;
   right: 0;
   top: 0;
@@ -888,7 +890,11 @@ export default {
 #title_room {
   color: white;
   position: absolute;
+  margin: 1rem;
+  font-weight: 200;
+  font-size: 1.3rem;
 }
+
 #container {
   height: 100vh;
   width: 100vw;
