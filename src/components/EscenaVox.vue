@@ -6,7 +6,7 @@
     <ul id="users"></ul>
 
     <!-- <br /> -->
-
+    <!-- <img src="../assets/Participante.png" alt="" /> -->
     <button
       class="menu"
       type="button"
@@ -505,7 +505,7 @@ export default {
       console.log(this.usersImages.length, this.users.length);
       let fragment = "";
       for (let i = 0; i < this.usersImages.length; i++) {
-        fragment += `<li style="display: flex;    flex-direction: column;margin:0 1rem;padding: 0.5rem">   <img class="imgPerfilGoogle"  style=" width: 3rem; border-radius: 50%;position: relative;  display: inline-block;  border-bottom: 1px dotted black;" src="${this.usersImages[i]}" alt="imgPerfil" /> <span  style="  visibility: visible;  width: 120px;  background-color: black;  color: #fff;  text-align: center;  border-radius: 6px;  padding: 5px 0;  position: absolute; z-index: 1;  width: 3rem; border-radius: 50%;">${this.users[i]}</span> </li>`;
+        fragment += `<li style="display: flex; align-items: center;   flex-direction: column;margin:1rem .5rem;padding: 0.2rem">   <img class="imgPerfilGoogle"  style=" width: 3rem; border-radius: 50%;position: relative;  display: inline-block;  border-bottom: 1px dotted black;" src="${this.usersImages[i]}" alt="imgPerfil" />  </li>`;
       }
       console.log(fragment);
       document.getElementById("users").innerHTML = fragment;
@@ -913,7 +913,7 @@ export default {
 }
 #mbtn {
   background-color: transparent;
-  /* border: none; */
+  border: none;
 }
 #logomenu {
   width: 70%;
@@ -941,6 +941,7 @@ export default {
 .menu {
   position: absolute;
   right: 0;
+  margin-top: 1rem;
 }
 #users {
   margin-right: 4rem;

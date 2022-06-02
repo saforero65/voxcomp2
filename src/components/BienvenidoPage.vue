@@ -323,6 +323,8 @@ export default {
       room: "",
       username: "",
       clients: new Object(),
+      image:
+        "https://us.123rf.com/450wm/kritchanut/kritchanut1406/kritchanut140600114/29213224-hombre-foto-de-perfil-silueta-avatar.jpg?ver=6",
     };
   },
   methods: {
