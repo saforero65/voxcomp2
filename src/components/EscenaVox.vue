@@ -6,27 +6,60 @@
     <ul id="users"></ul>
 
     <!-- <br /> -->
-    <div class="logo" @click="reload()">
-      <img src="../assets/Voxcomp-8.png" alt="voxcomp logo" />
+
+    <div class="top">
+      <p>.......</p>
+      <div class="logo" @click="reload()">
+        <img src="../assets/Voxcomp-8.png" alt="voxcomp logo" />
+      </div>
+
+      <button
+        type="button"
+        id="mbtn"
+        data-bs-toggle="offcanvas"
+        data-bs-target="#offcanvasRight"
+        aria-controls="offcanvasRight"
+      >
+        <img id="logomenu" src="../assets/Menu.png" alt="Menú" />
+      </button>
+
+      <div
+        class="offcanvas offcanvas-end"
+        tabindex="-1"
+        id="offcanvasRight"
+        aria-labelledby="offcanvasRightLabel"
+      >
+        <MenuJuego />
+      </div>
     </div>
 
     <h2 id="title_room"></h2>
     <div class="menuchiki">
       <div class="contmc">
+        <div class="dropdown">
+          <button
+            type="button"
+            id="dropdownMenuButton"
+            data-bs-toggle="dropdown"
+          >
+            <img src="../assets/Formas.png" alt="CambiarForma" />
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <li><a class="dropdown-item" @click="cubo()">Cubo</a></li>
+            <li><a class="dropdown-item" @click="cono()">Cono</a></li>
+            <li><a class="dropdown-item" @click="cilin()">Cilindro</a></li>
+          </ul>
+        </div>
+
+        <img src="../assets/Agregar.png" alt="AgregarObjeto" />
+        <img src="../assets/Quitar.png" alt="QuitarObjeto" />
         <input
           id="colorpicker"
           v-model="color"
           type="color"
           @input="CambioColor()"
         />
-        <img
-          @click="cargaModelo()"
-          src="../assets/Agregar.png"
-          alt="AgregarObjeto"
-        />
-        <!-- <img src="../assets/Agregar.png" alt="AgregarObjeto" /> -->
-        <img src="../assets/Agregar.png" alt="AgregarObjeto" />
-        <img src="../assets/Quitar.png" alt="QuitarObjeto" />
+        <!-- <img src="../assets/descargar.jpg" alt="Descargar" @click="exportSceneObject()"> -->
         <img
           src="../assets/descargar.jpg"
           alt="Descargar"
@@ -45,6 +78,8 @@ import * as THREE from "three";
 import { GLTFExporter } from "three/examples/jsm/exporters/GLTFExporter.js";
 import { io } from "socket.io-client";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import MenuJuego from "./MenuJuego.vue";
+// import { fas } from "@fortawesome/free-solid-svg-icons";
 
 // import { saveAs } from 'file-saver';
 // import * as CSG from 'csg';
@@ -53,8 +88,10 @@ export default {
   props: ["user"],
   data() {
     return {
+      estaNombre: false,
       objectsActualizar: [],
       users: [],
+      usersImages: [],
       username: "",
       room: "",
       camera: null,
@@ -88,7 +125,7 @@ export default {
       clock: null,
     };
   },
-  // components: { BarraHerramientas},
+  components: { MenuJuego },
   methods: {
     init: function () {
       this.camera = new THREE.PerspectiveCamera(
@@ -160,9 +197,39 @@ export default {
       var colornuevo = new THREE.Color(this.color);
       colornuevo.getHex();
       console.log(colornuevo);
-      this.cubeMaterial = new THREE.MeshPhongMaterial({
+      this.cubeMaterial = new THREE.MeshLambertMaterial({
         color: colornuevo,
       });
+    },
+    cilin() {
+      this.scene.remove(this.rollOverMesh);
+      this.cubeGeo = new THREE.CylinderGeometry(25, 25, 50, 16);
+      this.rollOverGeo = new THREE.CylinderGeometry(25, 25, 50, 16);
+      this.rollOverMesh = new THREE.Mesh(
+        this.rollOverGeo,
+        this.rollOverMaterial
+      );
+      this.scene.add(this.rollOverMesh);
+    },
+    cono() {
+      this.scene.remove(this.rollOverMesh);
+      this.cubeGeo = new THREE.ConeGeometry(25, 50, 16);
+      this.rollOverGeo = new THREE.ConeGeometry(25, 50, 16);
+      this.rollOverMesh = new THREE.Mesh(
+        this.rollOverGeo,
+        this.rollOverMaterial
+      );
+      this.scene.add(this.rollOverMesh);
+    },
+    cubo() {
+      this.scene.remove(this.rollOverMesh);
+      this.cubeGeo = new THREE.BoxGeometry(50, 50, 50);
+      this.rollOverGeo = new THREE.BoxGeometry(50, 50, 50);
+      this.rollOverMesh = new THREE.Mesh(
+        this.rollOverGeo,
+        this.rollOverMaterial
+      );
+      this.scene.add(this.rollOverMesh);
     },
     onWindowResize() {
       this.camera.aspect = window.innerWidth / window.innerHeight;
@@ -256,7 +323,12 @@ export default {
             .addScalar(25);
           console.log(this.voxel.position);
 
-          this.socket.emit("move", this.voxel.position, this.color);
+          this.socket.emit(
+            "move",
+            this.voxel.position,
+            this.color,
+            this.cubeGeo
+          );
 
           // this.scene.add(this.voxel);
 
@@ -395,17 +467,21 @@ export default {
       location.reload();
     },
     insertarUsuarios(message) {
+      console.log(message);
       if (
-        !this.users.includes(message.username) &&
-        message.username != "System"
-      )
+        !this.usersImages.includes(message.image) &&
+        message.image != undefined
+      ) {
         this.users.push(message.username);
-      //  console.log(user, "conectado en la sala");
-      let fragment = "";
-      for (let i = 0; i < this.users.length; i++) {
-        fragment += `<li style="margin:0 1rem;padding: 0.5rem;background: green;">${this.users[i]} </li>`;
+        this.usersImages.push(message.image);
       }
 
+      console.log(this.usersImages.length, this.users.length);
+      let fragment = "";
+      for (let i = 0; i < this.usersImages.length; i++) {
+        fragment += `<li style="margin:0 1rem;padding: 0.5rem;background: green;">   <img src="${this.usersImages[i]}" alt="imgPerfil" /> <span>${this.users[i]}</span> </li>`;
+      }
+      console.log(fragment);
       document.getElementById("users").innerHTML = fragment;
     },
     actualizar(array) {
@@ -457,6 +533,7 @@ export default {
         {
           username: this.user.username,
           room: this.user.room,
+          image: this.user.image,
         },
         (data) => {
           if (data.nameAvailable) {
@@ -473,6 +550,7 @@ export default {
           this.socket.emit("message", {
             username: this.user.username,
             text: "",
+            image: this.user.image,
           });
         }
       );
@@ -482,6 +560,7 @@ export default {
       // });
     });
     this.socket.on("message", (message) => {
+      // console.log(message);
       this.insertarUsuarios(message);
       // var momentTimestamp = moment.utc(message.timestamp);
       var hoy = new Date();
@@ -514,6 +593,7 @@ export default {
         this.socket.emit("message", {
           username: this.user.username,
           text: message.value,
+          image: this.user.image,
         });
       }
       message.value = "";
@@ -571,8 +651,8 @@ export default {
 
     this.socket.on(
       "userPositionsVoxels",
-      (clientCount, _id, _ids, voxelPosition, color) => {
-        console.log(voxelPosition);
+      (clientCount, _id, _ids, voxelPosition, color, mesh) => {
+        console.log("mesh", mesh);
 
         console.log(this.id, _id);
         console.log(this.clients);
@@ -580,11 +660,23 @@ export default {
         if (_id != this.id) {
           console.log("id del que puso el voxel:" + _id);
           let cubeMaterialaux = new THREE.MeshLambertMaterial({ color: color });
-
-          this.clients[_id] = {
-            mesh: new THREE.Mesh(this.cubeGeo, cubeMaterialaux),
-          };
-
+          if (mesh.type == "ConeGeometry") {
+            let geo = new THREE.ConeGeometry(25, 50, 16);
+            this.clients[_id] = {
+              mesh: new THREE.Mesh(geo, cubeMaterialaux),
+            };
+          } else if (mesh.type == "CylinderGeometry") {
+            let geo = new THREE.CylinderGeometry(25, 25, 50, 16);
+            this.clients[_id] = {
+              mesh: new THREE.Mesh(geo, cubeMaterialaux),
+            };
+          } else {
+            let geo = new THREE.BoxGeometry(50, 50, 50);
+            this.clients[_id] = {
+              mesh: new THREE.Mesh(geo, cubeMaterialaux),
+            };
+          }
+          // console.log(this.cubeGeo);
           console.log("recibiendo posicion voxel");
 
           this.clients[_id].mesh.position.x = voxelPosition.x;
@@ -615,6 +707,18 @@ export default {
         console.log("priovado  no necesita actualizar por que ya esta al dia");
       }
     });
+    this.socket.on("quitarUsuario", (userImage) => {
+      console.log(userImage);
+      const index = this.usersImages.indexOf(userImage);
+      console.log(index);
+      if (index > -1) {
+        this.users.splice(index, 1);
+        this.usersImages.splice(index, 1);
+      }
+      console.log(this.users);
+      console.log(this.usersImages);
+    });
+
     this.socket.on("userDisconnected", (clientCount, _id) => {
       //Update the data from the server
       // document.getElementById("numUsers").textContent = clientCount;
@@ -640,6 +744,10 @@ export default {
   right: 0;
 }
 
+.modal-dialog {
+  border: solid 2px khaki;
+  /* width: 100vw; */
+}
 .btn-grad {
   width: fit-content;
   background-image: linear-gradient(
@@ -732,6 +840,17 @@ export default {
   width: 5vh;
   margin: 5px;
 }
+.top {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  margin: auto;
+  width: fit-content;
+}
+.Menudropdown img {
+  width: 7vh;
+}
 #colorpicker {
   width: 4.6vh;
   height: 5vh;
@@ -759,5 +878,33 @@ export default {
   top: 0;
   bottom: -10rem;
   margin: auto;
+}
+#dropdownMenuButton {
+  background-color: transparent;
+  border: none;
+}
+#mbtn {
+  background-color: transparent;
+  /* border: none; */
+}
+#logomenu {
+  width: 70%;
+}
+.offcanvas,
+.offcanvas-lg,
+.offcanvas-md,
+.offcanvas-sm,
+.offcanvas-xl,
+.offcanvas-xxl {
+  --bs-offcanvas-width: 40vh;
+  /* --bs-offcanvas-height: 10vh; */
+  /* --bs-offcanvas-padding-x: 1rem; */
+  --bs-offcanvas-mrgin-top: 2%;
+  --bs-offcanvas-padding-y: 1rem;
+  --bs-offcanvas-color: ;
+  --bs-offcanvas-bg: #00000000;
+  --bs-offcanvas-border-width: 1px;
+  /* --bs-offcanvas-border-color: var(--bs-border-color-translucent); */
+  --bs-offcanvas-box-shadow: 0 0.125rem 0.25remrgba (0, 0, 0, 0.075);
 }
 </style>

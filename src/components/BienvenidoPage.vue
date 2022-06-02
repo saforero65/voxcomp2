@@ -140,7 +140,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  padding: 0 5%;
+  padding: 3% 5%;
   /* border: 2px solid greenyellow; */
 }
 .sala {
@@ -148,6 +148,8 @@
   flex-direction: column;
   align-items: center;
   margin: auto auto;
+  padding: 6% 5%;
+  /* border: 2px solid greenyellow; */
 }
 .log {
   display: flex;
@@ -155,7 +157,7 @@
   align-items: center;
   justify-content: space-between;
   /* border: solid 2px aqua; */
-  padding: 0 5%;
+  padding: 4% 5%;
   /* height: 100%;
   width: 85%; */
   margin: auto auto;
@@ -313,7 +315,8 @@ export default {
     async login() {
       const googleUser = await this.$gAuth.signIn();
       this.user = googleUser.getBasicProfile();
-      this.username = this.user.iY;
+      this.username = this.user.getName();
+      this.image = this.user.getImageUrl();
       console.log(this.user);
     },
     NuevaSala() {
@@ -390,6 +393,7 @@ export default {
         room: this.room,
         mostrarSala: true,
         mostrarModal: false,
+        image: this.image,
       });
       console.log("enviado");
     },

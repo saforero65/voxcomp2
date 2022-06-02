@@ -15,7 +15,10 @@
       @getValues="setValues"
     ></bienvenido-page>
     <div class="background"></div>
-    <escena-vox v-if="mostrarsala" :user="{ username, room }"></escena-vox>
+    <escena-vox
+      v-if="mostrarsala"
+      :user="{ username, room, image }"
+    ></escena-vox>
   </div>
 </template>
 <script>
@@ -30,6 +33,7 @@ export default {
       mostrarsala: false,
       username: "",
       room: "",
+      image: "",
     };
   },
   components: { BarraHerramientas, BienvenidoPage, EscenaVox, ChatCanvas },
@@ -38,6 +42,7 @@ export default {
       this.mostrarsala = obj.mostrarSala;
       this.mostrarModal = obj.mostrarModal;
       this.username = obj.username;
+      this.image = obj.image;
       this.room = obj.room;
       console.log("entro a setValues");
       document.querySelector(".background").style.display = "none";
