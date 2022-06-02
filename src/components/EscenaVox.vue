@@ -6,7 +6,7 @@
     <ul id="users"></ul>
 
     <!-- <br /> -->
-
+    <!-- <img src="../assets/Participante.png" alt="" /> -->
     <button
       class="menu"
       type="button"
@@ -41,7 +41,7 @@
           src="../assets/Agregar.png"
           alt="AgregarObjeto"
           id="crearbtn"
-          @click="crear()"
+          @click="cargaModelo()"
         />
         <img
           src="../assets/Quitar.png"
@@ -551,7 +551,7 @@ export default {
       console.log(this.usersImages.length, this.users.length);
       let fragment = "";
       for (let i = 0; i < this.usersImages.length; i++) {
-        fragment += `<li style="display: flex;    flex-direction: column;margin:0 1rem;padding: 0.5rem">   <img class="imgPerfilGoogle"  style=" width: 3rem; border-radius: 50%;position: relative;  display: inline-block;  border-bottom: 1px dotted black;" src="${this.usersImages[i]}" alt="imgPerfil" /> <span  style="  visibility: visible;  width: 120px;  background-color: black;  color: #fff;  text-align: center;  border-radius: 6px;  padding: 5px 0;  position: absolute; z-index: 1;  width: 3rem; border-radius: 50%;">${this.users[i]}</span> </li>`;
+        fragment += `<li style="display: flex; align-items: center;   flex-direction: column;margin:1rem .5rem;padding: 0.2rem">   <img class="imgPerfilGoogle"  style=" width: 3rem; border-radius: 50%;position: relative;  display: inline-block;  border-bottom: 1px dotted black;" src="${this.usersImages[i]}" alt="imgPerfil" />  </li>`;
       }
       console.log(fragment);
       document.getElementById("users").innerHTML = fragment;
@@ -610,8 +610,10 @@ export default {
         },
         (data) => {
           if (data.nameAvailable) {
-            document.getElementById("title_room").innerText =
-              "Estas en la sala: " + this.user.room;
+            document.getElementById("title_room").innerHTML =
+              'Estas en la sala: <span style=" font-weight: bold"> ' +
+              this.user.room +
+              "</span>";
             console.log("Estas en la sala: " + this.user.room);
             document.getElementById("message-area").style.display = "block";
             // this.sendToDad();
@@ -860,10 +862,10 @@ export default {
   position: absolute;
 }
 .logo {
-  position: absolute;
+  position: fixed;
   width: fit-content;
   height: fit-content;
-  margin: auto;
+  margin: 1rem auto;
   left: 0;
   right: 0;
   top: 0;
@@ -935,7 +937,11 @@ export default {
 #title_room {
   color: white;
   position: absolute;
+  margin: 1rem;
+  font-weight: 200;
+  font-size: 1.3rem;
 }
+
 #container {
   height: 100vh;
   width: 100vw;
@@ -960,7 +966,7 @@ export default {
 }
 #mbtn {
   background-color: transparent;
-  /* border: none; */
+  border: none;
 }
 #logomenu {
   width: 70%;
@@ -988,6 +994,7 @@ export default {
 .menu {
   position: absolute;
   right: 0;
+  margin-top: 1rem;
 }
 #users {
   margin-right: 4rem;
