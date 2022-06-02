@@ -25,7 +25,7 @@
             </a>
           </button>
         </div>
-        <button class="btn1" @click="Continuar()">
+        <button :disabled="username === ''" class="btn1" @click="Continuar()">
           <a>Continuar</a>
         </button>
       </div>
@@ -39,11 +39,10 @@
         </p>
 
         <div class="botones">
-          <button :disabled="username === ''" class="btn1" @click="NuevaSala()">
+          <button class="btn1" @click="NuevaSala()">
             <a>Crear</a>
           </button>
           <button
-            :disabled="username === ''"
             class="btn1"
             @click="UnirseSala()"
           >

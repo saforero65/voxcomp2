@@ -1,23 +1,12 @@
 <template>
 <div class="cont">
     <div class="continf">
-        <h1>Construye un puente3</h1>
-        <p>Dos pueblos separados por un abismo necesitan hallar la manera de transportarse 
-            de un lugar a otro sin tantas compliaciones.
-        <br>Encuentra la mejor forma de unir ambos lugares.</p>
+        <h1>Evita el deshielo</h1>
+        <p>El calentamiento global es cada vez más notable y los
+            polos están sufriendo las consecuencias.
+        <br>Construye una isla de hielo.
+        </p>
     </div>
-    <!-- <div class="continf">
-        <h1>Construye un puente</h1>
-        <p>Dos pueblos separados por un abismo necesitan hallar la manera de transportarse 
-            de un lugar a otro sin tantas compliaciones.
-        <br>Encuentra la mejor forma de unir ambos lugares.</p>
-    </div>
-    <div class="continf">
-        <h1>Construye un puente</h1>
-        <p>Dos pueblos separados por un abismo necesitan hallar la manera de transportarse 
-            de un lugar a otro sin tantas compliaciones.
-        <br>Encuentra la mejor forma de unir ambos lugares.</p>
-    </div> -->
     <button class="btn1" @click="exportar()" ><a>Continuar</a></button> 
 </div>
 
@@ -44,6 +33,9 @@
         padding: 2%;
         background-color: black;
         border-radius: 25px;
+
+        top: 10rem;
+        left: 13rem;
     }
     .cont::before {
         content: "";

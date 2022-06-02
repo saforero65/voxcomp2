@@ -1,13 +1,14 @@
 <template>
   <div>
     <div id="chat" class="chat">
-      <span>Chat</span>
+      <span>chat</span>
       <img src="../assets/enviar-mensaje.png" alt="flecha" />
     </div>
     <div class="row" id="message-area">
       <div class="">
         <h2>
-          Chat Sala <img id="cerrar" src="../assets/Salir.png" alt="salir" />
+          chat 
+          <img id="cerrar" src="../assets/Salir.png" alt="salir" />
         </h2>
         <div class="chat-wrap">
           <div class="top">
@@ -113,7 +114,9 @@ export default {
   padding: 0 !important;
 }
 .form__field {
-  font-family: inherit;
+  font-family: "Nunito";
+  font-size: 1rem;
+  letter-spacing: 0.2vw;
   width: 100%;
   border: 0;
   border-bottom: 2px solid #9b9b9b;
@@ -136,14 +139,18 @@ export default {
 
 #message-area h2 {
   text-align: center;
-  font-family: "Pattaya", sans-serif;
   font-weight: 400;
   font-style: normal;
   color: #f5f5f5;
-  background: rgb(0, 25, 49);
-  padding: 0 !important;
+  background: rgba(0, 25, 49, 0.623);
+  padding: 2% !important;
   margin: 0 !important;
   margin-right: 4rem;
+
+  font-family: "Oswald";
+  font-size: 2vw;
+  letter-spacing: 0.5vw;
+
 }
 #message-area h2 img {
   position: relative;
@@ -163,7 +170,7 @@ export default {
 }
 
 #message-area .chat-wrap {
-  background: white;
+  background: rgba(255, 255, 255, 0);
   -webkit-border-radius: 2px;
   -moz-border-radius: 2px;
   border-radius: 2px;
@@ -175,19 +182,25 @@ export default {
   overflow-x: hidden;
   height: 400px;
   padding: 5px 10px;
+  margin-left: 5%;
+
+  font-family: "Nunito";
+  font-size: 1rem;
+  letter-spacing: 0.2vw;
+  text-align: left;
 }
 
 #messages::-webkit-scrollbar-track {
-  background-color: #f5f5f5;
+  background-color: #000000;
 }
 
 #messages::-webkit-scrollbar {
   width: 5px;
-  background-color: #f5f5f5;
+  background-color: #000000;
 }
 
 #messages::-webkit-scrollbar-thumb {
-  background-color: #f44336;
+  background-color: #ffffff;
 }
 
 .wrap-msg {
@@ -222,4 +235,13 @@ export default {
 #message-form .input-group {
   margin-bottom: 0;
 }
+span{
+  font-family: "Oswald";
+  font-size: 1vw;
+  letter-spacing: 0.2vw;
+  font-weight: lighter;
+  color: rgba(255, 255, 255, 0.705);
+  /* border: solid 2px greenyellow; */
+}
+
 </style>

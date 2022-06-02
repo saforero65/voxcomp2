@@ -17,7 +17,7 @@
     >
       <img id="logomenu" src="../assets/Menu.png" alt="Menú" @click="unNone()"/>
     </button>
-    <div class="top">
+    <div class="top" id="form" >
       <div class="logo" @click="reload()">
         <img src="../assets/Voxcomp-8.png" alt="voxcomp logo" />
       </div>
@@ -49,20 +49,7 @@
           id="destroybtn"
           @click="destruir()"
         />
-
-        <input
-          id="colorpicker"
-          v-model="color"
-          type="color"
-          @input="CambioColor()"
-        />
-        <!-- <img src="../assets/descargar.jpg" alt="Descargar" @click="exportSceneObject()"> -->
-        <img
-          src="../assets/Descargar.png"
-          alt="Descargar"
-          @click="exportSceneObject()"
-        />
-        <div class="dropdown">
+        <div class="dropdown" id="form" >
           <button
             type="button"
             id="dropdownMenuButton"
@@ -76,9 +63,22 @@
             <li><a class="dropdown-item" @click="cilin()">Cilindro</a></li>
           </ul>
         </div>
+
+        <input
+          id="colorpicker"
+          v-model="color"
+          type="color"
+          @input="CambioColor()"
+        />
+        <img
+          src="../assets/Descargar.png"
+          alt="Descargar"
+          @click="exportSceneObject()"
+        />
+        <!-- <img src="../assets/descargar.jpg" alt="Descargar" @click="exportSceneObject()"> -->
       </div>
     </div>
-    <div class="cont" style="display:none">
+    <div class="cont2" style="display:none">
       <div v-if="reto==1">
         <MensajeReto1 @retosc="CerrarReto">
         </MensajeReto1>
@@ -241,14 +241,16 @@ export default {
       this.CargaModelo();
       var x = document.getElementById("offcanvasRight");
       var y = document.querySelector(".offcanvas-backdrop.fade.show");
-      var z = document.querySelector(".cont");
+      var z = document.querySelector(".cont2");
       x.style.display= "none";
       y.style.display= "none";
       z.style.display= "block";
+      document.getElementById("message-area").style.transform =
+      "translateX(-500px)";
     },
     CerrarReto(obj){
       console.log(obj);
-      var z = document.querySelector(".cont");
+      var z = document.querySelector(".cont2");
       z.style.display= "none";
 
       this.controls.enabled = true;
@@ -518,9 +520,9 @@ export default {
         console.log(gltf);
         this.gltf = gltf;
         this.model2 = gltf.scene;
-        this.model2.scale.set(15, 15, 15);
+        this.model2.scale.set(10, 10, 10);
         this.model2.position.x = this.camera.position.x;
-        this.model2.position.y = this.camera.position.y - 150;
+        this.model2.position.y = this.camera.position.y - 100;
         this.model2.position.z = this.camera.position.z - 150;
 
         console.log(this.model2);
@@ -611,7 +613,7 @@ export default {
         (data) => {
           if (data.nameAvailable) {
             document.getElementById("title_room").innerHTML =
-              'Estas en la sala: <span style=" font-weight: bold"> ' +
+              'SALA: <span style=" font-weight: bold"> ' +
               this.user.room +
               "</span>";
             console.log("Estas en la sala: " + this.user.room);
@@ -924,6 +926,11 @@ export default {
   margin: auto;
   width: fit-content;
 }
+#form{
+  width: 7vh;
+  display: flex;
+  align-items: center;
+}
 .Menudropdown img {
   width: 7vh;
 }
@@ -999,4 +1006,11 @@ export default {
 #users {
   margin-right: 4rem;
 }
+h2{
+  font-family: "Oswald";
+  font-size: 2vw;
+  letter-spacing: 0.2vw;
+  /* font-weight: bold; */
+}
+
 </style>
