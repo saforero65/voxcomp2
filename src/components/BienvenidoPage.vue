@@ -18,8 +18,11 @@
           />
           <p>o</p>
           <button class="btn3" @click="login()">
-            <a v-if="user"> ✓ {{ user.iY }}</a>
-            <a v-else> Ingresar </a>
+            <a v-if="user"> ✓ </a>
+            <a v-else id="loginfo">
+              <img src="../assets/google.png" alt="logoGoogle" id="googlebtn" />
+              Ingresar
+            </a>
           </button>
         </div>
         <button class="btn1" @click="Continuar()">
@@ -295,6 +298,17 @@
   letter-spacing: 0.3vw;
   font-weight: bold;
   text-align: left;
+}
+#loginfo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* border: solid 2px slateblue; */
+}
+#googlebtn {
+  height: 3vh;
+  align-self: center;
+  margin-right: 7px;
 }
 </style>
 

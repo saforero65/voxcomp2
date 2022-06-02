@@ -7,21 +7,21 @@
 
     <!-- <br /> -->
 
+    <button
+      class="menu"
+      type="button"
+      id="mbtn"
+      data-bs-toggle="offcanvas"
+      data-bs-target="#offcanvasRight"
+      aria-controls="offcanvasRight"
+    >
+      <img id="logomenu" src="../assets/Menu.png" alt="Menú" />
+    </button>
     <div class="top">
       <p>.......</p>
       <div class="logo" @click="reload()">
         <img src="../assets/Voxcomp-8.png" alt="voxcomp logo" />
       </div>
-
-      <button
-        type="button"
-        id="mbtn"
-        data-bs-toggle="offcanvas"
-        data-bs-target="#offcanvasRight"
-        aria-controls="offcanvasRight"
-      >
-        <img id="logomenu" src="../assets/Menu.png" alt="Menú" />
-      </button>
 
       <div
         class="offcanvas offcanvas-end"
@@ -36,6 +36,31 @@
     <h2 id="title_room"></h2>
     <div class="menuchiki">
       <div class="contmc">
+        <img
+          src="../assets/Agregar.png"
+          alt="AgregarObjeto"
+          id="crearbtn"
+          @click="crear()"
+        />
+        <img
+          src="../assets/Quitar.png"
+          alt="QuitarObjeto"
+          id="destroybtn"
+          @click="destruir()"
+        />
+
+        <input
+          id="colorpicker"
+          v-model="color"
+          type="color"
+          @input="CambioColor()"
+        />
+        <!-- <img src="../assets/descargar.jpg" alt="Descargar" @click="exportSceneObject()"> -->
+        <img
+          src="../assets/Descargar.png"
+          alt="Descargar"
+          @click="exportSceneObject()"
+        />
         <div class="dropdown">
           <button
             type="button"
@@ -50,21 +75,6 @@
             <li><a class="dropdown-item" @click="cilin()">Cilindro</a></li>
           </ul>
         </div>
-
-        <img src="../assets/Agregar.png" alt="AgregarObjeto" />
-        <img src="../assets/Quitar.png" alt="QuitarObjeto" />
-        <input
-          id="colorpicker"
-          v-model="color"
-          type="color"
-          @input="CambioColor()"
-        />
-        <!-- <img src="../assets/descargar.jpg" alt="Descargar" @click="exportSceneObject()"> -->
-        <img
-          src="../assets/descargar.jpg"
-          alt="Descargar"
-          @click="exportSceneObject()"
-        />
       </div>
     </div>
   </div>
@@ -105,6 +115,7 @@ export default {
       rollOverMesh: null,
       cubeGeo: null,
       cubeMaterial: null,
+      boolmod: true,
       objects: [],
       controls: null,
       color: "#ffffff",
@@ -231,6 +242,22 @@ export default {
       );
       this.scene.add(this.rollOverMesh);
     },
+    crear() {
+      this.boolmod = true;
+      console.log("CREAR");
+      var x = document.getElementById("crearbtn");
+      var y = document.getElementById("destroybtn");
+      y.style.opacity = 0.5;
+      x.style.opacity = 1;
+    },
+    destruir() {
+      this.boolmod = false;
+      console.log("DESTRUIR");
+      var x = document.getElementById("crearbtn");
+      var y = document.getElementById("destroybtn");
+      x.style.opacity = 0.5;
+      y.style.opacity = 1;
+    },
     onWindowResize() {
       this.camera.aspect = window.innerWidth / window.innerHeight;
       this.camera.updateProjectionMatrix();
@@ -301,8 +328,7 @@ export default {
         const intersect = intersects[0];
 
         // delete cube
-
-        if (this.isShiftDown) {
+        if (this.isShiftDown || !this.boolmod) {
           if (intersect.object !== this.plane) {
             this.scene.remove(intersect.object);
 
@@ -479,7 +505,7 @@ export default {
       console.log(this.usersImages.length, this.users.length);
       let fragment = "";
       for (let i = 0; i < this.usersImages.length; i++) {
-        fragment += `<li style="margin:0 1rem;padding: 0.5rem;background: green;">   <img src="${this.usersImages[i]}" alt="imgPerfil" /> <span>${this.users[i]}</span> </li>`;
+        fragment += `<li style="display: flex;    flex-direction: column;margin:0 1rem;padding: 0.5rem">   <img class="imgPerfilGoogle"  style=" width: 3rem; border-radius: 50%;position: relative;  display: inline-block;  border-bottom: 1px dotted black;" src="${this.usersImages[i]}" alt="imgPerfil" /> <span  style="  visibility: visible;  width: 120px;  background-color: black;  color: #fff;  text-align: center;  border-radius: 6px;  padding: 5px 0;  position: absolute; z-index: 1;  width: 3rem; border-radius: 50%;">${this.users[i]}</span> </li>`;
       }
       console.log(fragment);
       document.getElementById("users").innerHTML = fragment;
@@ -508,8 +534,8 @@ export default {
   },
   created() {
     this.clock = new THREE.Clock();
-    this.socket = io("http://localhost:8080/");
-    // this.socket = io("https://prueba-voxcomp.herokuapp.com/");
+    // this.socket = io("http://localhost:8080/");
+    this.socket = io("https://prueba-voxcomp.herokuapp.com/");
 
     this.socket.on("newUserConnected", (clientCount, _id) => {
       console.log(clientCount + " usuarios conectados");
@@ -837,8 +863,9 @@ export default {
   padding: 2vh 0;
 }
 .menuchiki img {
-  width: 5vh;
-  margin: 5px;
+  width: 4vh;
+  margin: 20%;
+  cursor: pointer;
 }
 .top {
   position: absolute;
@@ -856,6 +883,7 @@ export default {
   height: 5vh;
   margin: 5px;
   margin-bottom: 10px;
+  cursor: pointer;
 }
 #title_room {
   color: white;
@@ -906,5 +934,15 @@ export default {
   --bs-offcanvas-border-width: 1px;
   /* --bs-offcanvas-border-color: var(--bs-border-color-translucent); */
   --bs-offcanvas-box-shadow: 0 0.125rem 0.25remrgba (0, 0, 0, 0.075);
+}
+#destroybtn {
+  opacity: 0.5;
+}
+.menu {
+  position: absolute;
+  right: 0;
+}
+#users {
+  margin-right: 4rem;
 }
 </style>
